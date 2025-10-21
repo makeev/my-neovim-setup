@@ -27,6 +27,9 @@ vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Перейти в левое о
 vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Перейти в нижнее окно" })
 vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Перейти в верхнее окно" })
 vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Перейти в правое окно" })
+vim.keymap.set('n', '<leader>t1', '<cmd>1ToggleTerm<CR>', { desc = 'Terminal 1' })
+vim.keymap.set('n', '<leader>t2', '<cmd>2ToggleTerm<CR>', { desc = 'Terminal 2' })
+vim.keymap.set('n', '<leader>t3', '<cmd>3ToggleTerm<CR>', { desc = 'Terminal 3' })
 
 -- Setup lazy.nvim
 require("lazy").setup({

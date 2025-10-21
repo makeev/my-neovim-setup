@@ -4,7 +4,7 @@ return {
   config = function()
     require("toggleterm").setup({
       size = 15,
-      open_mapping = [[<C-t>]],
+      open_mapping = { '<C-t>', '<M-t>' },
       hide_numbers = true,
       shade_terminals = true,
       shading_factor = 2,
@@ -30,9 +30,6 @@ return {
       vim.keymap.set('t', '<C-j>', [[<Cmd>wincmd j<CR>]], opts)
       vim.keymap.set('t', '<C-k>', [[<Cmd>wincmd k<CR>]], opts)
       vim.keymap.set('t', '<C-l>', [[<Cmd>wincmd l<CR>]], opts)
-			vim.keymap.set('n', '<leader>t1', '<cmd>1ToggleTerm<CR>', { desc = 'Terminal 1' })
-			vim.keymap.set('n', '<leader>t2', '<cmd>2ToggleTerm<CR>', { desc = 'Terminal 2' })
-			vim.keymap.set('n', '<leader>t3', '<cmd>3ToggleTerm<CR>', { desc = 'Terminal 3' })
     end
 
     vim.cmd('autocmd! TermOpen term://* lua set_terminal_keymaps()')

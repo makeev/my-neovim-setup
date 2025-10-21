@@ -1,42 +1,78 @@
-local lsp = vim.g.lazyvim_python_lsp or "pyright"
-local ruff = vim.g.lazyvim_python_ruff or "ruff"
-
 return {
+  -- Treesitter для Python синтаксиса
   {
     "nvim-treesitter/nvim-treesitter",
-    opts = { ensure_installed = { "ninja", "rst" } },
-  },
-  {
-    "neovim/nvim-lspconfig",
-    opts = {
-      servers = {
-        ruff = {
-          cmd_env = { RUFF_TRACE = "messages" },
-          init_options = {
-            settings = {
-              logLevel = "error",
-            },
-          },
-        },
-      },
-    },
-  },
-  {
-    "neovim/nvim-lspconfig",
     opts = function(_, opts)
-      local servers = { "pyright", "basedpyright", "ruff", "ruff_lsp", ruff, lsp }
-      for _, server in ipairs(servers) do
-        opts.servers[server] = opts.servers[server] or {}
-        opts.servers[server].enabled = server == lsp or server == ruff
-      end
+      opts.ensure_installed = opts.ensure_installed or {}
+      vim.list_extend(opts.ensure_installed, { "python", "ninja", "rst" })
     end,
   },
+
+  -- nvim-lint для mypy и других линтеров
   {
-    "hrsh7th/nvim-cmp",
-    optional = true,
-    opts = function(_, opts)
-      opts.auto_brackets = opts.auto_brackets or {}
-      table.insert(opts.auto_brackets, "python")
+    "mfussenegger/nvim-lint",
+    event = { "BufReadPre", "BufNewFile" },
+    config = function()
+      local lint = require("lint")
+
+      -- Настройка линтеров для разных типов файлов
+      lint.linters_by_ft = {
+        python = { "mypy" },
+      }
+
+      -- Настройка mypy для работы с проектами
+      lint.linters.mypy.args = {
+        "--show-column-numbers",
+        "--show-error-end",
+        "--hide-error-codes",
+        "--hide-error-context",
+        "--no-color-output",
+        "--no-error-summary",
+        "--no-pretty",
+      }
+
+      -- Автоматический запуск линтера при сохранении и входе в буфер
+      local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
+      vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+        group = lint_augroup,
+        callback = function()
+          -- Запускаем линтер только для Python файлов
+          if vim.bo.filetype == "python" then
+            lint.try_lint()
+          end
+        end,
+      })
+
+      -- Команда для ручного запуска линтера
+      vim.api.nvim_create_user_command("Lint", function()
+        lint.try_lint()
+      end, { desc = "Trigger linting for current file" })
+    end,
+  },
+
+  -- Настройки для Python LSP серверов (pyright и ruff_lsp)
+  {
+    "neovim/nvim-lspconfig",
+    opts = function()
+      -- Эти серверы уже настроены в lsp.lua через mason-lspconfig
+      -- Здесь можем добавить дополнительные Python-специфичные настройки
+      return {}
+    end,
+  },
+
+  -- Интеграция с DAP для отладки Python
+  {
+    "mfussenegger/nvim-dap-python",
+    ft = "python",
+    dependencies = {
+      "mfussenegger/nvim-dap",
+    },
+    config = function()
+      -- Попытка найти debugpy в системе
+      local debugpy_path = vim.fn.exepath("debugpy")
+      if debugpy_path ~= "" then
+        require("dap-python").setup(debugpy_path)
+      end
     end,
   },
 }
