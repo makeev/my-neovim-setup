@@ -35,3 +35,6 @@ vim.opt.incsearch = true
 
 -- рулер
 vim.opt.colorcolumn = {"80", "120"}
+
+-- автоперезагрузка файлов
+vim.opt.autoread = true
