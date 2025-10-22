@@ -27,6 +27,7 @@ return {
 					"ruff", -- Новый ruff вместо ruff_lsp
 					"lua_ls",
 					"stylua",
+					"ts_ls", -- TypeScript/JavaScript
 				},
 				automatic_installation = true,
 			})
@@ -120,8 +121,17 @@ return {
 				},
 			}
 
+			-- TypeScript/JavaScript
+			vim.lsp.config.ts_ls = {
+				cmd = { "typescript-language-server", "--stdio" },
+				filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+				root_markers = { "package.json", "tsconfig.json", "jsconfig.json", ".git" },
+				capabilities = capabilities,
+				on_attach = on_attach,
+			}
+
 			-- Включаем LSP серверы
-			vim.lsp.enable({ "pyright", "ruff", "lua_ls" })
+			vim.lsp.enable({ "pyright", "ruff", "lua_ls", "ts_ls" })
 
 			-- Настройка диагностики
 			vim.diagnostic.config({
