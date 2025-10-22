@@ -10,6 +10,7 @@ return {
 		{ "<leader>:", "<cmd>FzfLua command_history<cr>", desc = "Command History" },
 		{ "<leader>f", "<cmd>FzfLua files<cr>", desc = "Find Files (cwd)" },
 		{ "<leader>g", "<cmd>FzfLua live_grep<cr>", desc = "Live Grep" },
+		{ "<leader>R", "<cmd>FzfLua oldfiles cwd_only=true<cr>", desc = "Recent Files" },
 		{
 			"<leader>s",
 			function()

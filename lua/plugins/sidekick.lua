@@ -8,6 +8,14 @@ return {
 			},
 		},
 		default = "copilot",
+		tools = {
+			copilot = {
+				args = { "--allow-all-tools", "--banner" },
+			},
+			claude = {
+				args = { "--dangerously-skip-permissions" },
+			},
+		},
 	},
 	keys = {
 		-- {
@@ -24,7 +32,7 @@ return {
 		{
 			"<M-a>",
 			function()
-				require("sidekick.cli").toggle({ name = "copilot", focus = true })
+				require("sidekick.cli").toggle({ focus = true })
 			end,
 			desc = "Sidekick Toggle",
 			mode = { "n", "t", "i", "x" },

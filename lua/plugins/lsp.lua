@@ -44,8 +44,23 @@ return {
 		},
 		config = function()
 			-- Общая функция on_attach для всех LSP серверов
+			-- Уменьшите задержку для CursorHold (по умолчанию 4000ms)
+			vim.opt.updatetime = 250
 			local on_attach = function(client, bufnr)
 				local opts = { buffer = bufnr, silent = true }
+
+				-- Добавляем подсветку переменных
+				if client.server_capabilities.documentHighlightProvider then
+					vim.api.nvim_create_augroup("lsp_document_highlight", { clear = true })
+					vim.api.nvim_create_autocmd("CursorHold", {
+						buffer = bufnr,
+						callback = vim.lsp.buf.document_highlight,
+					})
+					vim.api.nvim_create_autocmd("CursorMoved", {
+						buffer = bufnr,
+						callback = vim.lsp.buf.clear_references,
+					})
+				end
 
 				-- Горячие клавиши
 				vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
