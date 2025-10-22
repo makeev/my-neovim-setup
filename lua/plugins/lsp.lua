@@ -28,6 +28,7 @@ return {
 					"lua_ls",
 					"stylua",
 					"ts_ls", -- TypeScript/JavaScript
+					"gopls", -- Go
 				},
 				automatic_installation = true,
 			})
@@ -130,8 +131,26 @@ return {
 				on_attach = on_attach,
 			}
 
+			-- Go
+			vim.lsp.config.gopls = {
+				cmd = { "gopls" },
+				filetypes = { "go", "gomod", "gowork", "gotmpl" },
+				root_markers = { "go.work", "go.mod", ".git" },
+				capabilities = capabilities,
+				on_attach = on_attach,
+				settings = {
+					gopls = {
+						analyses = {
+							unusedparams = true,
+						},
+						staticcheck = true,
+						gofumpt = true,
+					},
+				},
+			}
+
 			-- Включаем LSP серверы
-			vim.lsp.enable({ "pyright", "ruff", "lua_ls", "ts_ls" })
+			vim.lsp.enable({ "pyright", "ruff", "lua_ls", "ts_ls", "gopls" })
 
 			-- Настройка диагностики
 			vim.diagnostic.config({
