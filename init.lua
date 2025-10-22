@@ -39,5 +39,36 @@ vim.opt.colorcolumn = {"80", "120"}
 -- автоперезагрузка файлов
 vim.opt.autoread = true
 
--- colorful terminal
+-- colors
 vim.opt.termguicolors = true
+
+vim.opt.list = false
+vim.opt.listchars = {
+    tab = '→ ',
+    trail = '•',
+    extends = '⟩',
+    precedes = '⟨',
+    nbsp = '␣',
+		space = '·',
+}
+
+-- Автокоманды для включения/выключения при входе в Visual режим
+vim.api.nvim_create_autocmd('ModeChanged', {
+    pattern = '*:[vV\x16]*', -- Переход в Visual, Visual Line, Visual Block
+    callback = function()
+        vim.opt.list = true
+    end,
+})
+
+vim.api.nvim_create_autocmd('ModeChanged', {
+    pattern = '[vV\x16]*:*', -- Выход из Visual режима
+    callback = function()
+        vim.opt.list = false
+    end,
+})
+
+-- Цвета для невидимых символов
+vim.cmd([[
+    highlight Whitespace guifg=#3b4261 gui=NONE
+    highlight NonText guifg=#3b4261 gui=NONE
+]])
