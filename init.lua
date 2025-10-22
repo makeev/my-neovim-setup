@@ -38,3 +38,6 @@ vim.opt.colorcolumn = {"80", "120"}
 
 -- автоперезагрузка файлов
 vim.opt.autoread = true
+
+-- colorful terminal
+vim.opt.termguicolors = true

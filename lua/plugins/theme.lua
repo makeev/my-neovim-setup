@@ -1,30 +1,85 @@
 return {
-  {
-    "projekt0n/github-nvim-theme",
-    lazy = false,
-    priority = 1000,
-    config = function()
-      require('github-theme').setup({})
+	{
+		"projekt0n/github-nvim-theme",
+		lazy = false,
+		priority = 1000,
+		config = function()
+			require("github-theme").setup({})
 
-      -- Функция для определения темы macOS
-      local function get_system_appearance()
-        local handle = io.popen("defaults read -g AppleInterfaceStyle 2>/dev/null")
-        if handle then
-          local result = handle:read("*a")
-          handle:close()
-          return result:match("Dark") and "dark" or "light"
-        end
-        return "light"
-      end
+			-- Функция для определения темы macOS
+			local function get_system_appearance()
+				local handle = io.popen("defaults read -g AppleInterfaceStyle 2>/dev/null")
+				if handle then
+					local result = handle:read("*a")
+					handle:close()
+					return result:match("Dark") and "dark" or "light"
+				end
+				return "light"
+			end
 
-      local appearance = get_system_appearance()
-      if appearance == "dark" then
-        vim.cmd('colorscheme github_dark')
-      else
-        vim.cmd('colorscheme github_light')
-      end
-    end,
-  },
-  { "catppuccin/nvim", name = "catppuccin" }
+			local appearance = get_system_appearance()
+			if appearance == "dark" then
+				vim.cmd("colorscheme github_dark")
+			else
+				vim.cmd("colorscheme github_light")
+			end
+		end,
+	},
+	{
+		"folke/tokyonight.nvim",
+		lazy = false,
+		opts = {},
+	},
+	{
+		"catppuccin/nvim",
+		lazy = true,
+		name = "catppuccin",
+		opts = {
+			lsp_styles = {
+				underlines = {
+					errors = { "undercurl" },
+					hints = { "undercurl" },
+					warnings = { "undercurl" },
+					information = { "undercurl" },
+				},
+			},
+			integrations = {
+				aerial = true,
+				alpha = true,
+				cmp = true,
+				dashboard = true,
+				flash = true,
+				fzf = true,
+				grug_far = true,
+				gitsigns = true,
+				headlines = true,
+				illuminate = true,
+				indent_blankline = { enabled = true },
+				leap = true,
+				lsp_trouble = true,
+				mason = true,
+				mini = true,
+				navic = { enabled = true, custom_bg = "lualine" },
+				neotest = true,
+				neotree = true,
+				noice = true,
+				notify = true,
+				snacks = true,
+				telescope = true,
+				treesitter_context = true,
+				which_key = true,
+			},
+		},
+		specs = {
+			{
+				"akinsho/bufferline.nvim",
+				optional = true,
+				opts = function(_, opts)
+					if (vim.g.colors_name or ""):find("catppuccin") then
+						opts.highlights = require("catppuccin.special.bufferline").get_theme()
+					end
+				end,
+			},
+		},
+	},
 }
-
