@@ -1,5 +1,6 @@
 require("config.lazy")
 require("config.autocmds")
+require('lualine').setup()
 
 -- Номера строк
 vim.opt.number = true
