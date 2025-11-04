@@ -43,6 +43,9 @@ vim.opt.autoread = true
 -- colors
 vim.opt.termguicolors = true
 
+-- отключить тормозящую подсветку скобок
+vim.g.loaded_matchparen = 1
+
 vim.opt.list = false
 vim.opt.listchars = {
     tab = '→ ',
