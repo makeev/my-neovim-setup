@@ -74,6 +74,10 @@ return {
 			-- Настройка capabilities для автодополнения
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
 
+			-- Установка правильной кодировки позиций (UTF-8 приоритет для ruff)
+			capabilities.general = capabilities.general or {}
+			capabilities.general.positionEncodings = { "utf-8", "utf-16" }
+
 			-- Попытка использовать blink.cmp capabilities если доступно
 			local has_blink, blink = pcall(require, "blink.cmp")
 			if has_blink then
@@ -95,7 +99,7 @@ return {
 							typeCheckingMode = "basic",
 							autoSearchPaths = true,
 							useLibraryCodeForTypes = true,
-							diagnosticMode = "workspace",
+							diagnosticMode = "openFilesOnly", -- только открытые файлы вместо workspace
 						},
 					},
 				},
@@ -108,8 +112,10 @@ return {
 				root_markers = { "pyproject.toml", "ruff.toml", ".git" },
 				capabilities = capabilities,
 				on_attach = function(client, bufnr)
-					-- Отключаем hover у ruff, чтобы не конфликтовало с pyright
+					-- Отключаем лишние capabilities у ruff - оставляем только линтинг
 					client.server_capabilities.hoverProvider = false
+					client.server_capabilities.renameProvider = false
+					client.server_capabilities.definitionProvider = false
 					on_attach(client, bufnr)
 				end,
 			}

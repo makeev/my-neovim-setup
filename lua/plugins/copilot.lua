@@ -10,6 +10,7 @@ return {
       suggestion = {
         enabled = not vim.g.ai_cmp,
         auto_trigger = true,
+        debounce = 150, -- задержка для снижения нагрузки при печати
         hide_during_completion = vim.g.ai_cmp,
         keymap = {
           accept = "<Tab>",

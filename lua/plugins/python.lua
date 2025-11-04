@@ -31,9 +31,9 @@ return {
         "--no-pretty",
       }
 
-      -- Автоматический запуск линтера при сохранении и входе в буфер
+      -- Автоматический запуск линтера только при сохранении (уменьшаем нагрузку)
       local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
-      vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+      vim.api.nvim_create_autocmd({ "BufWritePost" }, {
         group = lint_augroup,
         callback = function()
           -- Запускаем линтер только для Python файлов
