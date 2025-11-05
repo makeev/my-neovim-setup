@@ -8,14 +8,17 @@ return {
     event = "BufReadPost",
     opts = {
       suggestion = {
-        enabled = not vim.g.ai_cmp,
+        enabled = true,
         auto_trigger = true,
         debounce = 150, -- задержка для снижения нагрузки при печати
-        hide_during_completion = vim.g.ai_cmp,
+        hide_during_completion = false, -- не прятать copilot при показе blink.cmp
         keymap = {
           accept = "<Tab>",
+          accept_word = false,
+          accept_line = false,
           next = "<M-]>",
           prev = "<M-[>",
+          dismiss = "<C-]>",
         },
       },
       panel = { enabled = false },
