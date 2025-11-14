@@ -29,7 +29,7 @@ return {
     -- { "<leader>nbc", "<cmd>Neominimap BufDisable<cr>", desc = "Disable minimap for current buffer" },
 
     ---Focus Controls
-    { "<leader>m", "<cmd>Neominimap Focus<cr>", desc = "Focus on minimap" },
+    { "<leader>M", "<cmd>Neominimap Focus<cr>", desc = "Focus on minimap" },
     -- { "<leader>nu", "<cmd>Neominimap Unfocus<cr>", desc = "Unfocus minimap" },
     -- { "<leader>ns", "<cmd>Neominimap ToggleFocus<cr>", desc = "Switch focus on minimap" },
   },
