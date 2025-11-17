@@ -30,8 +30,21 @@ return {
     config = function(_, opts)
       require("copilot").setup(opts)
 
-      -- Умный Tab: принимает copilot если есть предложение, иначе вставляет отступ
+      -- Умный Tab: проверяет blink.cmp -> copilot -> обычный отступ
       vim.keymap.set("i", "<Tab>", function()
+        -- Сначала проверяем, открыто ли меню blink.cmp
+        local blink_ok, blink = pcall(require, "blink.cmp")
+        if blink_ok and blink.is_visible() then
+          -- Если меню blink открыто, пропускаем (используем preset 'enter')
+          -- Просто возвращаем Tab, чтобы не ломать навигацию по меню
+          if vim.o.expandtab then
+            return string.rep(" ", vim.o.shiftwidth)
+          else
+            return "\t"
+          end
+        end
+
+        -- Затем проверяем copilot suggestions
         local suggestion = require("copilot.suggestion")
         if suggestion.is_visible() then
           suggestion.accept()
