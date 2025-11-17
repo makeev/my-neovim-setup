@@ -19,6 +19,11 @@ return {
 			harpoon.ui:toggle_quick_menu(harpoon:list())
 		end, { desc = "Harpoon menu" })
 
+		-- Альтернативный маппинг для списка файлов
+		vim.keymap.set("n", "<leader>rh", function()
+			harpoon.ui:toggle_quick_menu(harpoon:list())
+		end, { desc = "Harpoon list" })
+
 		-- Переключение между файлами
 		vim.keymap.set("n", "<leader>1", function()
 			harpoon:list():select(1)
