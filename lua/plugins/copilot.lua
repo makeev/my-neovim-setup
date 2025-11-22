@@ -30,33 +30,42 @@ return {
     config = function(_, opts)
       require("copilot").setup(opts)
 
-      -- Умный Tab: проверяет blink.cmp -> copilot -> обычный отступ
+      -- Умный Tab с приоритетом: snippet -> copilot -> tab
+      -- Проверка blink.is_visible() удалена - она блокировала copilot при показе ghost text
       vim.keymap.set("i", "<Tab>", function()
-        -- Сначала проверяем, открыто ли меню blink.cmp
+        -- 1. Проверяем snippet navigation (если активен snippet)
         local blink_ok, blink = pcall(require, "blink.cmp")
-        if blink_ok and blink.is_visible() then
-          -- Если меню blink открыто, пропускаем (используем preset 'enter')
-          -- Просто возвращаем Tab, чтобы не ломать навигацию по меню
-          if vim.o.expandtab then
-            return string.rep(" ", vim.o.shiftwidth)
-          else
-            return "\t"
-          end
+        if blink_ok then
+          local snippet_ok, did_jump = pcall(blink.snippet_forward)
+          if snippet_ok and did_jump then return end
         end
 
-        -- Затем проверяем copilot suggestions
-        local suggestion = require("copilot.suggestion")
-        if suggestion.is_visible() then
+        -- 2. Проверяем copilot suggestion
+        local suggestion_ok, suggestion = pcall(require, "copilot.suggestion")
+        if suggestion_ok and suggestion.is_visible() then
           suggestion.accept()
-        else
-          -- Вставляем Tab или пробелы в зависимости от expandtab
-          if vim.o.expandtab then
-            return string.rep(" ", vim.o.shiftwidth)
-          else
-            return "\t"
-          end
+          return
         end
-      end, { expr = true, silent = true, desc = "Accept Copilot or insert tab" })
+
+        -- 3. Вставляем Tab или пробелы
+        if vim.o.expandtab then
+          return string.rep(" ", vim.o.shiftwidth)
+        else
+          return "\t"
+        end
+      end, { expr = true, silent = true, desc = "Snippet forward, accept Copilot, or insert tab" })
+
+      -- Shift-Tab для навигации назад по snippet
+      vim.keymap.set("i", "<S-Tab>", function()
+        local blink_ok, blink = pcall(require, "blink.cmp")
+        if blink_ok then
+          local snippet_ok, did_jump = pcall(blink.snippet_backward)
+          if snippet_ok and did_jump then return end
+        end
+
+        -- Fallback: обычный Shift-Tab behavior (dedent)
+        return "\t"
+      end, { expr = true, silent = true, desc = "Snippet backward" })
     end,
   },
 
