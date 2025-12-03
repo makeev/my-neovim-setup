@@ -105,6 +105,7 @@ return {
 							autoSearchPaths = true,
 							useLibraryCodeForTypes = true,
 							diagnosticMode = "openFilesOnly", -- только открытые файлы вместо workspace
+							autoImportCompletions = true, -- автоимпорты в автокомплите
 						},
 					},
 				},
