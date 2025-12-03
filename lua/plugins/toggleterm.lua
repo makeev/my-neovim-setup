@@ -56,5 +56,24 @@ return {
 
 		-- Маппинг для нормального режима
 		vim.keymap.set("n", "<C-z>", "<Cmd>lua ToggleTerminalZoom()<CR>", { noremap = true, silent = true })
+
+		-- Функция для открытия/фокуса терминала (без закрытия)
+		function _G.FocusOrOpenTerminal(term_id)
+			local terminals = require("toggleterm.terminal").get_all()
+			for _, term in ipairs(terminals) do
+				if term.id == term_id and term:is_open() then
+					-- Терминал открыт — делаем focus
+					term:focus()
+					return
+				end
+			end
+			-- Терминал не открыт — открываем
+			vim.cmd(term_id .. "ToggleTerm")
+		end
+
+		-- Маппинги для терминалов 1, 2, 3
+		vim.keymap.set("n", "<leader>t1", "<Cmd>lua FocusOrOpenTerminal(1)<CR>", { desc = "Terminal 1" })
+		vim.keymap.set("n", "<leader>t2", "<Cmd>lua FocusOrOpenTerminal(2)<CR>", { desc = "Terminal 2" })
+		vim.keymap.set("n", "<leader>t3", "<Cmd>lua FocusOrOpenTerminal(3)<CR>", { desc = "Terminal 3" })
 	end,
 }
