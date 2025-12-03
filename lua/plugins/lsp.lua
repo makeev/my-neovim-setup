@@ -63,16 +63,16 @@ return {
 				end
 
 				-- Горячие клавиши
-				vim.keymap.set("n", "gd", vim.lsp.buf.definition, opts)
+				vim.keymap.set("n", "gd", "<cmd>FzfLua lsp_definitions<cr>", opts)
 				vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
-				vim.keymap.set("n", "gr", vim.lsp.buf.references, opts)
+				vim.keymap.set("n", "gr", "<cmd>FzfLua lsp_references<cr>", opts)
 				vim.keymap.set(
 					"n",
 					"<leader>rn",
 					vim.lsp.buf.rename,
 					{ buffer = bufnr, silent = true, desc = "LSP Rename" }
 				)
-				vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
+				vim.keymap.set("n", "gi", "<cmd>FzfLua lsp_implementations<cr>", opts)
 				vim.keymap.set("n", "<C-m>", vim.lsp.buf.code_action, opts)
 				-- Auto Import - фильтруем code actions только для импортов (basedpyright)
 				vim.keymap.set("n", "<leader>ci", function()
