@@ -7,7 +7,7 @@ return {
 				enabled = true,
 			},
 		},
-		default = "copilot",
+		default = "claude",
 		tools = {
 			copilot = {
 				args = { "--allow-all-tools", "--banner" },
