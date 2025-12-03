@@ -23,8 +23,8 @@ return {
 		config = function()
 			require("mason-lspconfig").setup({
 				ensure_installed = {
-					"pyright",
-					"ruff", -- Новый ruff вместо ruff_lsp
+					"basedpyright", -- форк pyright с code actions для импортов
+					"ruff",
 					"lua_ls",
 					"stylua",
 					"ts_ls", -- TypeScript/JavaScript
@@ -74,6 +74,15 @@ return {
 				)
 				vim.keymap.set("n", "gi", vim.lsp.buf.implementation, opts)
 				vim.keymap.set("n", "<C-m>", vim.lsp.buf.code_action, opts)
+				-- Auto Import - фильтруем code actions только для импортов (basedpyright)
+				vim.keymap.set("n", "<leader>ci", function()
+					vim.lsp.buf.code_action({
+						filter = function(action)
+							return action.kind and action.kind:match("quickfix") and action.title:lower():match("import")
+						end,
+						apply = true, -- автоматически применить если один вариант
+					})
+				end, { buffer = bufnr, silent = true, desc = "Auto Import" })
 			end
 
 			-- Настройка capabilities для автодополнения
@@ -91,20 +100,20 @@ return {
 
 			-- НОВЫЙ API: vim.lsp.config вместо require('lspconfig')
 
-			-- Pyright для типизации и intellisense
-			vim.lsp.config.pyright = {
-				cmd = { "pyright-langserver", "--stdio" },
+			-- Basedpyright - форк pyright с code actions для импортов
+			vim.lsp.config.basedpyright = {
+				cmd = { "basedpyright-langserver", "--stdio" },
 				filetypes = { "python" },
 				root_markers = { "pyproject.toml", "setup.py", "requirements.txt", ".git" },
 				capabilities = capabilities,
 				on_attach = on_attach,
 				settings = {
-					python = {
+					basedpyright = {
 						analysis = {
 							typeCheckingMode = "basic",
 							autoSearchPaths = true,
 							useLibraryCodeForTypes = true,
-							diagnosticMode = "openFilesOnly", -- только открытые файлы вместо workspace
+							diagnosticMode = "workspace", -- анализ всего workspace для полноценных автоимпортов
 							autoImportCompletions = true, -- автоимпорты в автокомплите
 						},
 					},
@@ -177,7 +186,7 @@ return {
 			}
 
 			-- Включаем LSP серверы
-			vim.lsp.enable({ "pyright", "ruff", "lua_ls", "ts_ls", "gopls" })
+			vim.lsp.enable({ "basedpyright", "ruff", "lua_ls", "ts_ls", "gopls" })
 
 			-- Настройка диагностики
 			vim.diagnostic.config({
