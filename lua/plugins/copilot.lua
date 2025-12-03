@@ -21,6 +21,7 @@ return {
           dismiss = "<C-]>",
         },
       },
+      nes = { enabled = false, auto_trigger = false },
       panel = { enabled = false },
       filetypes = {
         markdown = true,
