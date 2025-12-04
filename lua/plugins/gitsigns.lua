@@ -13,7 +13,7 @@ return {
 		signcolumn = true, -- Toggle with `:Gitsigns toggle_signs`
 		numhl = true, -- Toggle with `:Gitsigns toggle_numhl`
 		linehl = false, -- Toggle with `:Gitsigns toggle_linehl`
-		word_diff = true, -- Toggle with `:Gitsigns toggle_word_diff`
+		word_diff = false, -- Toggle with `:Gitsigns toggle_word_diff`
 		watch_gitdir = {
 			follow_files = true,
 		},
@@ -85,6 +85,7 @@ return {
 				gs.blame_line({ full = true })
 			end, { desc = "Blame line" })
 			map("n", "<leader>tb", gs.toggle_current_line_blame, { desc = "Toggle line blame" })
+			map("n", "<leader>tw", gs.toggle_word_diff, { desc = "Toggle word diff" })
 			map("n", "<leader>th", gs.toggle_linehl, { desc = "Toggle line highlight" })
 			map("n", "<leader>hd", gs.diffthis, { desc = "Diff this" })
 			map("n", "<leader>hD", function()
