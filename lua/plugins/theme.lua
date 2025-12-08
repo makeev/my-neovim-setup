@@ -20,7 +20,7 @@ return {
 			-- Функция для применения темы
 			local function apply_theme()
 				local appearance = get_system_appearance()
-				local new_colorscheme = appearance == "dark" and "github_dark" or "github_light"
+				local new_colorscheme = appearance == "dark" and "catppuccin-mocha" or "github_light"
 
 				if vim.g.colors_name ~= new_colorscheme then
 					vim.cmd("colorscheme " .. new_colorscheme)
