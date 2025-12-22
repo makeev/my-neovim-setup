@@ -188,6 +188,32 @@ return {
 			-- Включаем LSP серверы
 			vim.lsp.enable({ "basedpyright", "ruff", "lua_ls", "ts_ls", "gopls" })
 
+			-- Toggle между workspace и openFilesOnly режимами LSP
+			vim.g.lsp_workspace_mode = true -- начинаем с workspace mode
+
+			vim.keymap.set("n", "<leader>ts", function()
+				vim.g.lsp_workspace_mode = not vim.g.lsp_workspace_mode
+				local new_mode = vim.g.lsp_workspace_mode and "workspace" or "openFilesOnly"
+
+				-- Перезапускаем LSP клиенты с новыми настройками
+				for _, client in ipairs(vim.lsp.get_clients()) do
+					if client.name == "basedpyright" then
+						-- Обновляем настройки
+						client.settings = vim.tbl_deep_extend("force", client.settings or {}, {
+							basedpyright = {
+								analysis = {
+									diagnosticMode = new_mode,
+								},
+							},
+						})
+						-- Уведомляем сервер об изменении настроек
+						client.notify("workspace/didChangeConfiguration", { settings = client.settings })
+					end
+				end
+
+				vim.notify("LSP diagnosticMode: " .. new_mode, vim.log.levels.INFO)
+			end, { desc = "Toggle LSP workspace/local mode" })
+
 			-- Настройка диагностики
 			vim.diagnostic.config({
 				virtual_text = {
