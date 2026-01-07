@@ -131,6 +131,7 @@ return {
 					client.server_capabilities.hoverProvider = false
 					client.server_capabilities.renameProvider = false
 					client.server_capabilities.definitionProvider = false
+					client.server_capabilities.documentHighlightProvider = false
 					on_attach(client, bufnr)
 				end,
 			}
