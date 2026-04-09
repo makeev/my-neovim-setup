@@ -31,15 +31,7 @@ return {
 				"xml",
 				"yaml",
 			},
-			-- Включаем подсветку синтаксиса
-			highlight = {
-				enable = true,
-				additional_vim_regex_highlighting = false,
-			},
-			-- Опционально: включаем отступы
-			indent = {
-				enable = true,
-			},
+			-- highlight и indent теперь управляются нативно Nvim 0.12 (vim.treesitter.start())
 		},
 	},
 

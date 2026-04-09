@@ -40,8 +40,7 @@ vim.opt.colorcolumn = {"80", "120"}
 -- автоперезагрузка файлов
 vim.opt.autoread = true
 
--- colors
-vim.opt.termguicolors = true
+-- termguicolors включён по умолчанию с Nvim 0.10+
 
 -- отключить тормозящую подсветку скобок
 vim.g.loaded_matchparen = 1

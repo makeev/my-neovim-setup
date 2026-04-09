@@ -30,11 +30,11 @@ return {
 			-- Применяем тему при запуске
 			apply_theme()
 
-			-- Автоматически проверяем тему каждые 5 секунд
-			local timer = vim.loop.new_timer()
+			-- Автоматически проверяем тему каждые 30 секунд
+			local timer = vim.uv.new_timer()
 			timer:start(
 				0,
-				5000,
+				30000,
 				vim.schedule_wrap(function()
 					apply_theme()
 				end)

@@ -51,12 +51,14 @@ return {
 
 				-- Добавляем подсветку переменных
 				if client.server_capabilities.documentHighlightProvider then
-					vim.api.nvim_create_augroup("lsp_document_highlight", { clear = true })
+					local group = vim.api.nvim_create_augroup("lsp_document_highlight_" .. bufnr, { clear = true })
 					vim.api.nvim_create_autocmd("CursorHold", {
+						group = group,
 						buffer = bufnr,
 						callback = vim.lsp.buf.document_highlight,
 					})
 					vim.api.nvim_create_autocmd("CursorMoved", {
+						group = group,
 						buffer = bufnr,
 						callback = vim.lsp.buf.clear_references,
 					})
@@ -149,7 +151,7 @@ return {
 							globals = { "vim" },
 						},
 						workspace = {
-							library = vim.api.nvim_get_runtime_file("", true),
+							library = { vim.env.VIMRUNTIME },
 							checkThirdParty = false,
 						},
 						telemetry = {
