@@ -3,6 +3,11 @@ return {
 	dependencies = { "nvim-tree/nvim-web-devicons" },
 	lazy = false,
 	opts = {},
+	config = function(_, opts)
+		local fzf = require("fzf-lua")
+		fzf.setup(opts)
+		fzf.register_ui_select()
+	end,
 	keys = {
     { "<leader><leader>", "<cmd>FzfLua builtin<cr>", desc = "FzfLua Menu" },
 		{ "<leader>:", "<cmd>FzfLua command_history<cr>", desc = "Command History" },
