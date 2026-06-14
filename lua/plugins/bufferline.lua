@@ -5,9 +5,9 @@ return {
   config = function()
     require("bufferline").setup{
       options = {
-        mode = "tabs", -- Режим табов вместо буферов
+        mode = "tabs", -- tabs mode instead of buffers
         themable = true,
-        numbers = "ordinal", -- Показывать номера табов
+        numbers = "ordinal", -- show tab numbers
         close_command = "tabclose %d",
         right_mouse_command = "tabclose %d",
         left_mouse_command = "tabn %d",

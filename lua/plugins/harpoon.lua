@@ -9,22 +9,22 @@ return {
 		harpoon:setup()
 		-- REQUIRED
 
-		-- Добавить файл
+		-- Add a file
 		vim.keymap.set("n", "<leader>m", function()
 			harpoon:list():add()
 		end, { desc = "Add file to harpoon" })
 
-		-- Показать список файлов
+		-- Show the file list
 		vim.keymap.set("n", "<leader>hm", function()
 			harpoon.ui:toggle_quick_menu(harpoon:list())
 		end, { desc = "Harpoon menu" })
 
-		-- Альтернативный маппинг для списка файлов
+		-- Alternative mapping for the file list
 		vim.keymap.set("n", "<leader>rh", function()
 			harpoon.ui:toggle_quick_menu(harpoon:list())
 		end, { desc = "Harpoon list" })
 
-		-- Переключение между файлами
+		-- Switch between files
 		vim.keymap.set("n", "<leader>1", function()
 			harpoon:list():select(1)
 		end, { desc = "Harpoon file 1" })

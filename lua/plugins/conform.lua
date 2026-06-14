@@ -27,7 +27,7 @@ return {
 				require("conform").format({ async = true, lsp_fallback = true, range = range })
 			end, { range = true }),
 
-			-- Горячая клавиша
+			-- Keymap
 			vim.keymap.set({ "n", "v" }, "<leader>p", function()
 				require("conform").format({ lsp_fallback = true })
 			end, { desc = "Format" }),

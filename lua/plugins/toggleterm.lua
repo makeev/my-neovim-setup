@@ -22,7 +22,7 @@ return {
 			},
 		})
 
-		-- Esc для выхода из терминального режима
+		-- Esc to leave terminal mode
 		function _G.set_terminal_keymaps()
 			local opts = { buffer = 0 }
 			vim.keymap.set("t", "<esc>", [[<C-\><C-n>]], opts)
@@ -31,22 +31,22 @@ return {
 			vim.keymap.set("t", "<C-k>", [[<Cmd>wincmd k<CR>]], opts)
 			vim.keymap.set("t", "<C-l>", [[<Cmd>wincmd l<CR>]], opts)
 
-			-- Разворачивание/сворачивание терминала
+			-- Zoom the terminal in/out
 			vim.keymap.set("t", "<C-z>", [[<Cmd>lua ToggleTerminalZoom()<CR>]], opts)
 		end
 
-		-- Функция для разворачивания/сворачивания терминала
+		-- Function to zoom the terminal in/out
 		function _G.ToggleTerminalZoom()
 			if vim.g.terminal_zoomed then
-				-- Восстановить сохранённый размер
+				-- Restore the saved size
 				if vim.g.terminal_saved_size then
 					vim.cmd("resize " .. vim.g.terminal_saved_size)
 				end
 				vim.g.terminal_zoomed = false
 			else
-				-- Сохранить текущий размер
+				-- Save the current size
 				vim.g.terminal_saved_size = vim.api.nvim_win_get_height(0)
-				-- Развернуть на максимум
+				-- Expand to full height
 				vim.cmd("resize " .. vim.o.lines)
 				vim.g.terminal_zoomed = true
 			end
@@ -54,24 +54,24 @@ return {
 
 		vim.cmd("autocmd! TermOpen term://* lua set_terminal_keymaps()")
 
-		-- Маппинг для нормального режима
+		-- Mapping for normal mode
 		vim.keymap.set("n", "<C-z>", "<Cmd>lua ToggleTerminalZoom()<CR>", { noremap = true, silent = true })
 
-		-- Функция для открытия/фокуса терминала (без закрытия)
+		-- Function to open/focus a terminal (without closing it)
 		function _G.FocusOrOpenTerminal(term_id)
 			local terminals = require("toggleterm.terminal").get_all()
 			for _, term in ipairs(terminals) do
 				if term.id == term_id and term:is_open() then
-					-- Терминал открыт — делаем focus
+					-- Terminal is open — focus it
 					term:focus()
 					return
 				end
 			end
-			-- Терминал не открыт — открываем
+			-- Terminal is not open — open it
 			vim.cmd(term_id .. "ToggleTerm")
 		end
 
-		-- Маппинги для терминалов 1, 2, 3
+		-- Mappings for terminals 1, 2, 3
 		vim.keymap.set("n", "<leader>t1", "<Cmd>lua FocusOrOpenTerminal(1)<CR>", { desc = "Terminal 1" })
 		vim.keymap.set("n", "<leader>t2", "<Cmd>lua FocusOrOpenTerminal(2)<CR>", { desc = "Terminal 2" })
 		vim.keymap.set("n", "<leader>t3", "<Cmd>lua FocusOrOpenTerminal(3)<CR>", { desc = "Terminal 3" })

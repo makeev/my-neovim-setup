@@ -27,7 +27,7 @@ return {
     -- See :h blink-cmp-config-keymap for defining your own keymap
     keymap = {
       preset = 'enter',
-      -- Явно освобождаем Tab для copilot
+      -- Explicitly free up Tab/Shift-Tab for copilot
       ['<Tab>'] = {},
       ['<S-Tab>'] = {},
     },

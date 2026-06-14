@@ -3,7 +3,7 @@ return {
   event = "VeryLazy",
   opts = {
     notify = {
-      enabled = false  -- отключить интеграцию с vim.notify
+      enabled = false  -- disable the vim.notify integration
     },
   },
   dependencies = {

@@ -18,15 +18,15 @@ vim.opt.rtp:prepend(lazypath)
 -- Make sure to setup `mapleader` and `maplocalleader` before
 -- loading lazy.nvim so that mappings are correct.
 -- This is also a good place to setup other settings (vim.opt)
--- Установить leader клавишу на пробел
+-- Set the leader key to Space
 vim.g.mapleader = " "
 vim.g.maplocalleader = "\\"
 
--- Перемещение между окнами
-vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Перейти в левое окно" })
-vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Перейти в нижнее окно" })
-vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Перейти в верхнее окно" })
-vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Перейти в правое окно" })
+-- Move between windows
+vim.keymap.set("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
+vim.keymap.set("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
+vim.keymap.set("n", "<C-k>", "<C-w>k", { desc = "Go to upper window" })
+vim.keymap.set("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
 
 -- Setup lazy.nvim
 require("lazy").setup({

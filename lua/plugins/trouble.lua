@@ -22,11 +22,11 @@ return {
         win = { position = "right" },
       },
     },
-    -- Фильтры и сортировка
+    -- Filters and sorting
     filter = {
-      severity = vim.diagnostic.severity.HINT, -- показываем все уровни
+      severity = vim.diagnostic.severity.HINT, -- show all severity levels
     },
-    -- Иконки для разных источников диагностики
+    -- Icons for the different diagnostic sources
     icons = {
       indent = {
         middle = "├╴",

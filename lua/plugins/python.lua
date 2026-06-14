@@ -1,5 +1,5 @@
 return {
-  -- Treesitter для Python синтаксиса
+  -- Treesitter for Python syntax
   {
     "nvim-treesitter/nvim-treesitter",
     opts = function(_, opts)
@@ -8,19 +8,19 @@ return {
     end,
   },
 
-  -- nvim-lint для mypy и других линтеров
+  -- nvim-lint for mypy and other linters
   {
     "mfussenegger/nvim-lint",
     event = { "BufReadPre", "BufNewFile" },
     config = function()
       local lint = require("lint")
 
-      -- Настройка линтеров для разных типов файлов
+      -- Configure linters per filetype
       lint.linters_by_ft = {
         python = { "mypy" },
       }
 
-      -- Настройка mypy для работы с проектами
+      -- Configure mypy to work with projects
       lint.linters.mypy.args = {
         "--show-column-numbers",
         "--show-error-end",
@@ -31,36 +31,36 @@ return {
         "--no-pretty",
       }
 
-      -- Автоматический запуск линтера только при сохранении (уменьшаем нагрузку)
+      -- Run the linter only on save (to reduce load)
       local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
       vim.api.nvim_create_autocmd({ "BufWritePost" }, {
         group = lint_augroup,
         callback = function()
-          -- Запускаем линтер только для Python файлов
+          -- Run the linter only for Python files
           if vim.bo.filetype == "python" then
             lint.try_lint()
           end
         end,
       })
 
-      -- Команда для ручного запуска линтера
+      -- Command to run the linter manually
       vim.api.nvim_create_user_command("Lint", function()
         lint.try_lint()
       end, { desc = "Trigger linting for current file" })
     end,
   },
 
-  -- Настройки для Python LSP серверов (pyright и ruff_lsp)
+  -- Settings for the Python LSP servers (pyright and ruff_lsp)
   {
     "neovim/nvim-lspconfig",
     opts = function()
-      -- Эти серверы уже настроены в lsp.lua через mason-lspconfig
-      -- Здесь можем добавить дополнительные Python-специфичные настройки
+      -- These servers are already configured in lsp.lua via mason-lspconfig
+      -- Additional Python-specific settings can be added here
       return {}
     end,
   },
 
-  -- Интеграция с DAP для отладки Python
+  -- DAP integration for debugging Python
   {
     "mfussenegger/nvim-dap-python",
     ft = "python",
@@ -68,7 +68,7 @@ return {
       "mfussenegger/nvim-dap",
     },
     config = function()
-      -- Попытка найти debugpy в системе
+      -- Try to find debugpy on the system
       local debugpy_path = vim.fn.exepath("debugpy")
       if debugpy_path ~= "" then
         require("dap-python").setup(debugpy_path)

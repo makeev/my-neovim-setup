@@ -1,301 +1,197 @@
 # Neovim Configuration
 
-Modern Neovim configuration with LSP support, autocompletion, Git integration, and AI assistant.
+A modern, fast Neovim setup built on [lazy.nvim](https://github.com/folke/lazy.nvim) — LSP, completion, Git, and AI assistants out of the box.
+
+## Highlights
+
+- ⚡ **Native LSP** (`vim.lsp.config` API) with Mason-managed servers for Python, Lua, TypeScript/JavaScript, and Go
+- 🐍 **Python-first**: basedpyright (with auto-imports) + Ruff (LSP) + mypy + debugpy
+- 🤖 **AI**: GitHub Copilot ghost text with a smart `<Tab>` (snippet → Copilot → indent) and [sidekick.nvim](https://github.com/folke/sidekick.nvim) for CLI agents
+- 🌗 **Auto light/dark** theme that follows the macOS system appearance
+- 🚀 Fast completion via [blink.cmp](https://github.com/saghen/blink.cmp) (Rust matcher)
+- 🧰 UI niceties consolidated in [snacks.nvim](https://github.com/folke/snacks.nvim): notifier, indent guides, smooth scroll, lazygit, input
 
 ## Requirements
 
-- **Neovim** >= 0.10.0
-- **Git**
-- **Node.js** >= 18.x (for some LSP servers)
-- **Python** >= 3.8 (for Python LSP)
-- **Nerd Font** (recommended for icons)
-- **ripgrep** (for fast searching)
-- **fd** (optional, for fzf)
-- **lazygit** (optional, for Git UI)
+| Tool | Why |
+|------|-----|
+| Neovim >= 0.10 | core (0.12+ recommended for native Treesitter) |
+| Git | plugin management |
+| Node.js >= 18 | some LSP servers, Copilot |
+| Python >= 3.8 | Python LSP/linting |
+| ripgrep | live grep |
+| A Nerd Font | icons |
+| fd, lazygit | optional (fuzzy find, Git UI) |
 
 ## Installation
 
-### 1. Installing Dependencies
-
-#### macOS
 ```bash
-# Install Neovim
-brew install neovim
+# Back up any existing config
+mv ~/.config/nvim ~/.config/nvim.backup 2>/dev/null
 
-# Install additional utilities
-brew install ripgrep fd lazygit node
-
-# Install Nerd Font
-brew tap homebrew/cask-fonts
-brew install --cask font-jetbrains-mono-nerd-font
-```
-
-#### Linux (Ubuntu/Debian)
-```bash
-# Install Neovim
-sudo add-apt-repository ppa:neovim-ppa/unstable
-sudo apt update
-sudo apt install neovim
-
-# Install additional utilities
-sudo apt install ripgrep fd-find nodejs npm
-
-# Install lazygit
-LAZYGIT_VERSION=$(curl -s "https://api.github.com/repos/jesseduffield/lazygit/releases/latest" | grep -Po '"tag_name": "v\K[^"]*')
-curl -Lo lazygit.tar.gz "https://github.com/jesseduffield/lazygit/releases/latest/download/lazygit_${LAZYGIT_VERSION}_Linux_x86_64.tar.gz"
-tar xf lazygit.tar.gz lazygit
-sudo install lazygit /usr/local/bin
-```
-
-### 2. Installing Configuration
-
-```bash
-# Backup existing configuration (if any)
-mv ~/.config/nvim ~/.config/nvim.backup
-
-# Clone the repository
+# Clone and launch — plugins install on first start
 git clone <your-repo-url> ~/.config/nvim
-
-# Launch Neovim (plugins will install automatically)
 nvim
 ```
 
-On first launch:
-1. Lazy.nvim will automatically install all plugins
-2. Mason will install necessary LSP servers
-3. Treesitter will download syntax parsers
+On first launch, lazy.nvim installs the plugins, Mason installs the LSP servers, and Treesitter downloads parsers. Then enable Copilot with `:Copilot auth`.
 
-### 3. Setting up GitHub Copilot (optional)
+Dependencies on macOS:
 
-After the first launch, run:
-```vim
-:Copilot auth
+```bash
+brew install neovim ripgrep fd lazygit node
+brew install --cask font-jetbrains-mono-nerd-font
 ```
 
-## Project Structure
+## Structure
 
 ```
 ~/.config/nvim/
-├── init.lua                 # Main configuration file
-├── lazy-lock.json          # Installed plugin versions
-├── lua/
-│   ├── config/
-│   │   ├── lazy.lua        # Lazy.nvim plugin manager configuration
-│   │   └── autocmds.lua    # Autocommands
-│   └── plugins/            # Plugin configurations
-│       ├── lsp.lua         # LSP configuration (Pyright, Ruff, Lua, TS, Go)
-│       ├── blink.lua       # Autocompletion
-│       ├── treesitter.lua  # Syntax highlighting
-│       ├── copilot.lua     # GitHub Copilot
-│       ├── neo-tree.lua    # File explorer
-│       ├── fzf.lua         # Fuzzy finder
-│       ├── gitsigns.lua    # Git integration
-│       ├── lazygit.lua     # LazyGit integration
-│       ├── lualine.lua     # Status line
-│       ├── bufferline.lua  # Buffer tabs
-│       ├── theme.lua       # Themes
-│       ├── conform.lua     # Code formatting
-│       ├── trouble.lua     # Diagnostics list
-│       ├── toggleterm.lua  # Terminal
-│       ├── which-key.lua   # Keyboard shortcuts hints
-│       └── ...             # Other plugins
-└── README.md               # This file
+├── init.lua              # Editor options + autocommands entry point
+├── lazy-lock.json        # Pinned plugin versions
+├── check_setup.sh        # Python toolchain sanity check
+└── lua/
+    ├── config/
+    │   ├── lazy.lua      # Bootstrap, leader keys, window navigation
+    │   └── autocmds.lua  # Trim whitespace, highlight on yank, restore cursor
+    └── plugins/          # One file per plugin (auto-imported)
 ```
 
-## Core Plugins
+## Plugins
 
-### Plugin Manager
-- **lazy.nvim** - Modern plugin manager with lazy loading
+| Area | Plugins |
+|------|---------|
+| Core | lazy.nvim, snacks.nvim |
+| LSP & completion | nvim-lspconfig, mason.nvim, mason-lspconfig, blink.cmp, nvim-lint, conform.nvim |
+| AI | copilot.lua, sidekick.nvim |
+| Navigation | neo-tree.nvim, fzf-lua, harpoon, trouble.nvim, neominimap.nvim |
+| Git | gitsigns.nvim, snacks lazygit |
+| Editing | nvim-treesitter (+ context), nvim-autopairs, multicursor.nvim, text-case.nvim |
+| UI | github-nvim-theme, tokyonight, catppuccin, lualine, bufferline, noice, which-key, mini.hipatterns |
+| Sessions | persistence.nvim |
+| Python | venv-selector.nvim, nvim-dap-python |
+| Misc | vim-wakatime |
 
-### LSP and Autocompletion
-- **nvim-lspconfig** - LSP server configuration (new vim.lsp.config API)
-- **mason.nvim** - Manager for LSP servers, linters, and formatters
-- **mason-lspconfig.nvim** - Mason integration with lspconfig
-- **blink.cmp** - Fast Rust-based autocompletion
+Configured LSP servers: **basedpyright** + **ruff** (Python), **lua_ls** (Lua), **ts_ls** (TS/JS), **gopls** (Go). Formatting is handled by conform.nvim (prettier, stylua, ruff).
 
-Supported languages:
-- Python (Pyright + Ruff)
-- Lua (lua_ls)
-- TypeScript/JavaScript (ts_ls)
-- Go (gopls)
+## Keybindings
 
-### AI Assistant
-- **copilot.lua** - GitHub Copilot integration
+Leader is `<Space>`. Press `<leader>?` for buffer-local keymaps (which-key).
 
-### Navigation and Search
-- **neo-tree.nvim** - File explorer
-- **fzf-lua** - Fast fuzzy search for files, text, etc.
-- **trouble.nvim** - Beautiful error and diagnostics list
+### General
 
-### Git
-- **gitsigns.nvim** - Git status in buffer, blame, etc.
-- **lazygit.nvim** - LazyGit integration
+| Key | Action |
+|-----|--------|
+| `<C-h/j/k/l>` | Move between windows |
+| `<leader>e` | Toggle file explorer (Neo-tree) |
+| `<leader>p` | Format buffer/selection |
 
-### Highlighting and Syntax
-- **nvim-treesitter** - Advanced syntax highlighting
-- **treesitter-context** - Shows function/class context at the top
+### Find / search (fzf-lua)
 
-### UI and Interface
-- **github-nvim-theme** - GitHub theme (light/dark, auto-switching)
-- **tokyonight.nvim** - TokyoNight theme
-- **catppuccin** - Catppuccin theme
-- **lualine.nvim** - Status line
-- **bufferline.nvim** - Beautiful buffer line
-- **noice.nvim** - Modern UI for messages and commands
-- **which-key.nvim** - Keyboard shortcuts hints
-- **indent-blankline.nvim** - Indent lines
-- **mini.hipatterns** - Color and pattern highlighting
-
-### Editing
-- **nvim-autopairs** - Auto-close brackets
-- **conform.nvim** - Code formatting
-- **multicursor.nvim** - Multiple cursors
-- **neoscroll.nvim** - Smooth scrolling
-
-### Python-specific
-- **venv-selector.nvim** - Python virtual environment selector
-
-### Terminal
-- **toggleterm.nvim** - Integrated terminal
-
-### Other
-- **neominimap.nvim** - Code minimap
-- **sidekick.nvim** - Sidebar with context
-
-## Keyboard Shortcuts
-
-### Basic
-- `<Space>` - Leader key
-- `<C-h/j/k/l>` - Navigate between windows
-
-### Files and Navigation
-- `<leader>e` - Open/close Neo-tree
-- `<leader>ff` - Find file (fzf)
-- `<leader>fg` - Search content (grep)
-- `<leader>fb` - Buffer list
-- `<leader>fh` - File history
+| Key | Action |
+|-----|--------|
+| `<leader>f` | Find files (cwd) |
+| `<leader>g` | Live grep |
+| `<leader>R` | Recent files |
+| `<leader>s` | Workspace symbols |
+| `<leader><leader>` | fzf-lua command menu |
+| `<leader>:` | Command history |
 
 ### LSP
-- `gd` - Go to definition
-- `gr` - Show references
-- `gi` - Go to implementation
-- `K` - Show documentation
-- `<leader>rn` - Rename symbol
-- `<C-m>` - Code actions
+
+| Key | Action |
+|-----|--------|
+| `gd` / `gr` / `gi` | Definition / references / implementations |
+| `K` | Hover docs |
+| `<leader>rn` | Rename symbol |
+| `<C-m>` | Code action |
+| `<leader>ci` | Auto-import (basedpyright) |
+| `<leader>ts` | Toggle workspace ↔ open-files diagnostics |
+| `<leader>cv` | Select Python virtualenv |
+
+### Completion & Copilot
+
+| Key | Action |
+|-----|--------|
+| `<Enter>` | Accept completion (blink.cmp) |
+| `<C-n>` / `<C-p>` | Next / previous item |
+| `<C-Space>` | Open menu / docs |
+| `<Tab>` | Snippet jump → accept Copilot → indent |
+| `<M-]>` / `<M-[>` | Next / previous Copilot suggestion |
 
 ### Git
-- `<leader>gg` - Open LazyGit
-- `]c` / `[c` - Next/previous change (hunks)
 
-### Terminal
-- `<leader>t1` - Terminal 1
-- `<leader>t2` - Terminal 2
-- `<leader>t3` - Terminal 3
+| Key | Action |
+|-----|--------|
+| `<leader>G` | LazyGit |
+| `<leader>gl` / `<leader>gf` | LazyGit log / file history |
+| `]c` / `[c` | Next / previous hunk |
+| `<leader>hs` / `<leader>hr` | Stage / reset hunk |
+| `<leader>hp` / `<leader>hb` | Preview hunk / blame line |
+| `<leader>hd` | Diff this |
 
-### Autocompletion (Blink)
-- `<Enter>` - Accept completion
-- `<C-n>` / `<C-p>` - Next/previous
-- `<C-e>` - Close menu
-- `<C-Space>` - Open menu/documentation
+### Diagnostics (Trouble)
 
-### Copilot
-- `<Tab>` - Accept suggestion
-- `<M-]>` - Next suggestion
-- `<M-[>` - Previous suggestion
+| Key | Action |
+|-----|--------|
+| `<leader>xx` | Diagnostics (all) |
+| `<leader>xX` | Diagnostics (buffer) |
+| `<leader>cs` / `<leader>cS` | Symbols / LSP references |
+| `]q` / `[q` | Next / previous quickfix item |
 
-## Default Settings
+### Terminal, Harpoon & Sessions
 
-- **Line numbers**: Enabled (absolute + relative)
-- **Indentation**: 2 spaces, auto-indent enabled
-- **Current line highlighting**: Enabled
-- **Line wrapping**: Disabled
-- **Backup files**: Disabled
-- **Undo history**: Persistent (10000 levels)
-- **Search**: No highlight after search
-- **Color columns**: 80 and 120 characters
-- **Auto-reload**: Enabled
+| Key | Action |
+|-----|--------|
+| `<C-t>` / `<M-t>` | Toggle terminal |
+| `<leader>t1/t2/t3` | Focus/open terminal 1–3 |
+| `<C-z>` | Zoom terminal |
+| `<leader>m` | Add file to Harpoon |
+| `<leader>hm` | Harpoon menu |
+| `<leader>1`–`<leader>5` | Jump to Harpoon file 1–5 |
+| `<leader>qs` / `<leader>ql` | Restore session / last session |
 
-### Features
-- **Auto theme switching**: Theme automatically switches based on macOS system theme
-- **Show invisible characters**: Only in Visual mode (spaces, tabs, etc.)
-- **Document highlight**: Auto-highlight variables under cursor
+### Editing extras
 
-## Installation Check
+| Key | Action |
+|-----|--------|
+| `<C-n>` | Add cursor at next match (multicursor) |
+| `ga` | Text-case conversions (snake/camel/Pascal/…) |
+| `<leader>M` | Focus minimap |
 
-Run the check script:
+### AI agents (sidekick)
+
+| Key | Action |
+|-----|--------|
+| `<M-a>` | Toggle CLI agent |
+| `<leader>aa` / `<leader>ac` | Toggle CLI / Claude |
+| `<leader>at` / `<leader>av` | Send line/file context / selection |
+
+## Editor defaults
+
+Set in `init.lua`: relative + absolute line numbers, 2-space indents, no line wrap, no swap/backup files, persistent undo (10000 levels), color columns at 80/120, current-line highlight, and trailing whitespace trimmed on save. Invisible characters are shown only in Visual mode.
+
+## Maintenance
+
+```vim
+:Lazy update     " update plugins
+:Mason           " manage LSP servers (U = update all)
+:TSUpdate        " update Treesitter parsers
+:checkhealth     " diagnose the setup
+```
+
+Verify the Python toolchain from the shell:
+
 ```bash
 ./check_setup.sh
 ```
 
-Or manually check in Neovim:
-```vim
-:checkhealth
-:Mason
-:Lazy
-```
+### Troubleshooting
 
-## Updating
-
-### Update Plugins
-```vim
-:Lazy update
-```
-
-### Update LSP Servers
-```vim
-:Mason
-# Press 'U' to update all
-```
-
-### Update Treesitter Parsers
-```vim
-:TSUpdate
-```
-
-## Troubleshooting
-
-### Plugins Not Loading
-```vim
-:Lazy sync
-:Lazy clean
-:Lazy install
-```
-
-### LSP Not Working
-```vim
-:LspInfo                 # Check LSP status
-:Mason                   # Check installed servers
-:checkhealth lsp         # LSP diagnostics
-```
-
-### Python LSP Can't Find Modules
-Make sure the correct virtual environment is selected:
-```vim
-:VenvSelect
-```
-
-## Customization
-
-To add your own settings:
-1. Create a file in `lua/plugins/` for new plugins
-2. Modify `init.lua` for basic Vim settings
-3. Use `lua/config/autocmds.lua` for autocommands
-
-Examples:
-```lua
--- lua/plugins/my-plugin.lua
-return {
-  "author/plugin-name",
-  opts = {
-    -- settings
-  }
-}
-```
+- **Plugins**: `:Lazy sync`
+- **LSP**: `:LspInfo`, `:checkhealth lsp`
+- **Python can't find modules**: pick the right virtualenv with `:VenvSelect`
 
 ## License
 
 MIT
-
-## Contact
-
-If you have questions or suggestions, create an issue in the repository.

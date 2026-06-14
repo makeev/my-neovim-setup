@@ -1,17 +1,17 @@
--- Убрать пробелы в конце строк при сохранении
+-- Strip trailing whitespace on save
 vim.api.nvim_create_autocmd("BufWritePre", {
   pattern = "*",
   command = [[%s/\s\+$//e]],
 })
 
--- Подсветить при копировании
+-- Highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
   callback = function()
     vim.highlight.on_yank({ timeout = 200 })
   end,
 })
 
--- Вернуться к последней позиции при открытии файла
+-- Restore the last cursor position when opening a file
 vim.api.nvim_create_autocmd("BufReadPost", {
   callback = function()
     local mark = vim.api.nvim_buf_get_mark(0, '"')

@@ -6,7 +6,7 @@ return {
 		config = function()
 			require("github-theme").setup({})
 
-			-- Функция для определения темы macOS
+			-- Function to detect the macOS appearance
 			local function get_system_appearance()
 				local handle = io.popen("defaults read -g AppleInterfaceStyle 2>/dev/null")
 				if handle then
@@ -17,7 +17,7 @@ return {
 				return "light"
 			end
 
-			-- Функция для применения темы
+			-- Function to apply the theme
 			local function apply_theme()
 				local appearance = get_system_appearance()
 				local new_colorscheme = appearance == "dark" and "catppuccin-mocha" or "github_light"
@@ -27,10 +27,10 @@ return {
 				end
 			end
 
-			-- Применяем тему при запуске
+			-- Apply the theme on startup
 			apply_theme()
 
-			-- Автоматически проверяем тему каждые 30 секунд
+			-- Re-check the system appearance every 30 seconds
 			local timer = vim.uv.new_timer()
 			timer:start(
 				0,

@@ -2,11 +2,11 @@ return {
 	"folke/persistence.nvim",
 	event = "BufReadPre", -- this will only start session saving when an actual file was opened
 	opts = {
-		-- dir = vim.fn.expand(vim.fn.getcwd() .. "/.ide/"), -- сохранение сессий в папку .ide
-		options = { "buffers", "curdir", "tabpages", "winsize" }, -- что сохранять
-		need = 1, -- минимальное количество открытых буферов для сохранения сессии
+		-- dir = vim.fn.expand(vim.fn.getcwd() .. "/.ide/"), -- save sessions into the .ide folder
+		options = { "buffers", "curdir", "tabpages", "winsize" }, -- what to save
+		need = 1, -- minimum number of open buffers required to save a session
 		pre_save = function()
-			-- Закрыть neo-tree перед сохранением сессии
+			-- Close neo-tree before saving the session
 			for _, win in ipairs(vim.api.nvim_list_wins()) do
 				local buf = vim.api.nvim_win_get_buf(win)
 				local ft = vim.api.nvim_get_option_value("filetype", { buf = buf })

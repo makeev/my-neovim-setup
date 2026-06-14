@@ -1,36 +1,36 @@
 """
-Тестовый файл для проверки Python настройки в Neovim
+Test file for verifying the Python setup in Neovim.
 """
 from typing import List
 
 
 def add_numbers(a: int, b: int) -> int:
-    """Складывает два числа."""
+    """Add two numbers."""
     return a + b
 
 
 def process_items(items: List[str]) -> None:
-    """Обрабатывает список элементов."""
+    """Process a list of items."""
     for item in items:
         print(f"Processing: {item}")
 
 
-# Ошибка типа - mypy должен поймать
+# Type error - mypy should catch this
 def broken_function(x: str) -> int:
-    return x  # Ошибка: несовпадение типов
+    return x  # Error: type mismatch
 
 
-# Неиспользованный импорт - ruff должен предупредить
+# Unused import - ruff should warn
 import os  # noqa: F401
 
 
-# Ошибка стиля - ruff должен исправить
+# Style error - ruff should fix this
 def badly_formatted(    x,y,   z   ):
     return x+y+z
 
 
 class Person:
-    """Класс для демонстрации."""
+    """Demonstration class."""
 
     def __init__(self, name: str, age: int):
         self.name = name
@@ -41,11 +41,11 @@ class Person:
 
 
 if __name__ == "__main__":
-    # Нормальный код
+    # Valid code
     result = add_numbers(5, 10)
     print(f"Result: {result}")
 
-    # Ошибка типа - pyright должен поймать
+    # Type error - pyright should catch this
     wrong_result = add_numbers("hello", "world")  # type: ignore
 
     person = Person("Alice", 30)

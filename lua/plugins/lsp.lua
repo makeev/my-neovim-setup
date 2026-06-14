@@ -1,5 +1,5 @@
 return {
-	-- Mason для управления LSP серверами
+	-- Mason for managing LSP servers
 	{
 		"williamboman/mason.nvim",
 		config = function()
@@ -16,14 +16,14 @@ return {
 		end,
 	},
 
-	-- Mason-lspconfig для интеграции Mason и lspconfig
+	-- Mason-lspconfig to integrate Mason with lspconfig
 	{
 		"williamboman/mason-lspconfig.nvim",
 		dependencies = { "williamboman/mason.nvim" },
 		config = function()
 			require("mason-lspconfig").setup({
 				ensure_installed = {
-					"basedpyright", -- форк pyright с code actions для импортов
+					"basedpyright", -- pyright fork with code actions for imports
 					"ruff",
 					"lua_ls",
 					"stylua",
@@ -35,7 +35,7 @@ return {
 		end,
 	},
 
-	-- LSP конфигурация (новый API vim.lsp.config)
+	-- LSP configuration (new vim.lsp.config API)
 	{
 		"neovim/nvim-lspconfig",
 		dependencies = {
@@ -43,13 +43,13 @@ return {
 			"williamboman/mason-lspconfig.nvim",
 		},
 		config = function()
-			-- Общая функция on_attach для всех LSP серверов
-			-- Уменьшите задержку для CursorHold (по умолчанию 4000ms)
+			-- Shared on_attach function for all LSP servers
+			-- Reduce the CursorHold delay (default is 4000ms)
 			vim.opt.updatetime = 250
 			local on_attach = function(client, bufnr)
 				local opts = { buffer = bufnr, silent = true }
 
-				-- Добавляем подсветку переменных
+				-- Highlight references to the symbol under the cursor
 				if client.server_capabilities.documentHighlightProvider then
 					local group = vim.api.nvim_create_augroup("lsp_document_highlight_" .. bufnr, { clear = true })
 					vim.api.nvim_create_autocmd("CursorHold", {
@@ -64,7 +64,7 @@ return {
 					})
 				end
 
-				-- Горячие клавиши
+				-- Keymaps
 				vim.keymap.set("n", "gd", "<cmd>FzfLua lsp_definitions<cr>", opts)
 				vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
 				vim.keymap.set("n", "gr", "<cmd>FzfLua lsp_references<cr>", opts)
@@ -76,33 +76,33 @@ return {
 				)
 				vim.keymap.set("n", "gi", "<cmd>FzfLua lsp_implementations<cr>", opts)
 				vim.keymap.set("n", "<C-m>", vim.lsp.buf.code_action, opts)
-				-- Auto Import - фильтруем code actions только для импортов (basedpyright)
+				-- Auto Import - filter code actions to import-only (basedpyright)
 				vim.keymap.set("n", "<leader>ci", function()
 					vim.lsp.buf.code_action({
 						filter = function(action)
 							return action.kind and action.kind:match("quickfix") and action.title:lower():match("import")
 						end,
-						apply = true, -- автоматически применить если один вариант
+						apply = true, -- apply automatically when there is a single option
 					})
 				end, { buffer = bufnr, silent = true, desc = "Auto Import" })
 			end
 
-			-- Настройка capabilities для автодополнения
+			-- Configure capabilities for completion
 			local capabilities = vim.lsp.protocol.make_client_capabilities()
 
-			-- Установка правильной кодировки позиций (UTF-8 приоритет для ruff)
+			-- Set the position encoding (prefer UTF-8 for ruff)
 			capabilities.general = capabilities.general or {}
 			capabilities.general.positionEncodings = { "utf-8", "utf-16" }
 
-			-- Попытка использовать blink.cmp capabilities если доступно
+			-- Use blink.cmp capabilities if available
 			local has_blink, blink = pcall(require, "blink.cmp")
 			if has_blink then
 				capabilities = blink.get_lsp_capabilities(capabilities)
 			end
 
-			-- НОВЫЙ API: vim.lsp.config вместо require('lspconfig')
+			-- NEW API: vim.lsp.config instead of require('lspconfig')
 
-			-- Basedpyright - форк pyright с code actions для импортов
+			-- Basedpyright - pyright fork with code actions for imports
 			vim.lsp.config.basedpyright = {
 				cmd = { "basedpyright-langserver", "--stdio" },
 				filetypes = { "python" },
@@ -115,21 +115,21 @@ return {
 							typeCheckingMode = "basic",
 							autoSearchPaths = true,
 							useLibraryCodeForTypes = true,
-							diagnosticMode = "workspace", -- анализ всего workspace для полноценных автоимпортов
-							autoImportCompletions = true, -- автоимпорты в автокомплите
+							diagnosticMode = "workspace", -- analyze the whole workspace for complete auto-imports
+							autoImportCompletions = true, -- auto-imports in completion
 						},
 					},
 				},
 			}
 
-			-- Ruff для линтинга и форматирования
+			-- Ruff for linting and formatting
 			vim.lsp.config.ruff = {
 				cmd = { "ruff", "server" },
 				filetypes = { "python" },
 				root_markers = { "pyproject.toml", "ruff.toml", ".git" },
 				capabilities = capabilities,
 				on_attach = function(client, bufnr)
-					-- Отключаем лишние capabilities у ruff - оставляем только линтинг
+					-- Disable extra ruff capabilities - keep linting only
 					client.server_capabilities.hoverProvider = false
 					client.server_capabilities.renameProvider = false
 					client.server_capabilities.definitionProvider = false
@@ -138,7 +138,7 @@ return {
 				end,
 			}
 
-			-- Lua LS для конфигурации Neovim
+			-- Lua LS for the Neovim config
 			vim.lsp.config.lua_ls = {
 				cmd = { "lua-language-server" },
 				filetypes = { "lua" },
@@ -188,20 +188,20 @@ return {
 				},
 			}
 
-			-- Включаем LSP серверы
+			-- Enable the LSP servers
 			vim.lsp.enable({ "basedpyright", "ruff", "lua_ls", "ts_ls", "gopls" })
 
-			-- Toggle между workspace и openFilesOnly режимами LSP
-			vim.g.lsp_workspace_mode = true -- начинаем с workspace mode
+			-- Toggle between workspace and openFilesOnly LSP modes
+			vim.g.lsp_workspace_mode = true -- start in workspace mode
 
 			vim.keymap.set("n", "<leader>ts", function()
 				vim.g.lsp_workspace_mode = not vim.g.lsp_workspace_mode
 				local new_mode = vim.g.lsp_workspace_mode and "workspace" or "openFilesOnly"
 
-				-- Перезапускаем LSP клиенты с новыми настройками
+				-- Reload the LSP clients with the new settings
 				for _, client in ipairs(vim.lsp.get_clients()) do
 					if client.name == "basedpyright" then
-						-- Обновляем настройки
+						-- Update the settings
 						client.settings = vim.tbl_deep_extend("force", client.settings or {}, {
 							basedpyright = {
 								analysis = {
@@ -209,7 +209,7 @@ return {
 								},
 							},
 						})
-						-- Уведомляем сервер об изменении настроек
+						-- Notify the server about the settings change
 						client.notify("workspace/didChangeConfiguration", { settings = client.settings })
 					end
 				end
@@ -217,7 +217,7 @@ return {
 				vim.notify("LSP diagnosticMode: " .. new_mode, vim.log.levels.INFO)
 			end, { desc = "Toggle LSP workspace/local mode" })
 
-			-- Настройка диагностики
+			-- Diagnostics configuration
 			vim.diagnostic.config({
 				virtual_text = {
 					prefix = "●",

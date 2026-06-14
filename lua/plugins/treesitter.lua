@@ -31,7 +31,7 @@ return {
 				"xml",
 				"yaml",
 			},
-			-- highlight и indent теперь управляются нативно Nvim 0.12 (vim.treesitter.start())
+			-- highlight and indent are now handled natively by Nvim 0.12 (vim.treesitter.start())
 		},
 	},
 
