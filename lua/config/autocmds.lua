@@ -21,3 +21,13 @@ vim.api.nvim_create_autocmd("BufReadPost", {
   end,
 })
 
+-- Soft-wrap long lines for markdown files only
+vim.api.nvim_create_autocmd("FileType", {
+  pattern = "markdown",
+  callback = function()
+    vim.opt_local.wrap = true
+    vim.opt_local.linebreak = true
+    vim.opt_local.breakindent = true
+  end,
+})
+
