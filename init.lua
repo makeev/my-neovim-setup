@@ -1,6 +1,5 @@
 require("config.lazy")
 require("config.autocmds")
-require('lualine').setup()
 
 -- Line numbers
 vim.opt.number = true
@@ -39,6 +38,13 @@ vim.opt.colorcolumn = {"80", "120"}
 
 -- Auto-reload files changed outside Neovim
 vim.opt.autoread = true
+
+-- Shorter CursorHold delay (drives LSP document highlight); default is 4000ms
+vim.opt.updatetime = 250
+
+-- Default border for every floating window (Nvim 0.11+), so individual
+-- plugins don't each need their own `border = "rounded"`
+vim.opt.winborder = "rounded"
 
 -- termguicolors is enabled by default since Nvim 0.10+
 

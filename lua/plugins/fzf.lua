@@ -1,7 +1,9 @@
 return {
 	"ibhagwan/fzf-lua",
 	dependencies = { "nvim-tree/nvim-web-devicons" },
-	lazy = false,
+	-- VeryLazy rather than lazy=false: it still has to load itself (so that
+	-- register_ui_select() takes over vim.ui.select), just not during startup.
+	event = "VeryLazy",
 	opts = {},
 	config = function(_, opts)
 		local fzf = require("fzf-lua")

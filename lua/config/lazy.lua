@@ -39,4 +39,20 @@ require("lazy").setup({
   install = { colorscheme = { "github_light" } },
   -- automatically check for plugin updates
   checker = { enabled = false },
+  performance = {
+    rtp = {
+      -- Bundled vim plugins we never use; skipping them shaves off sourcing time
+      disabled_plugins = {
+        "gzip",
+        "matchit",
+        "matchparen",
+        "netrwPlugin",
+        "rplugin",
+        "tarPlugin",
+        "tohtml",
+        "tutor",
+        "zipPlugin",
+      },
+    },
+  },
 })

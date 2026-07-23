@@ -1,6 +1,14 @@
 return {
 	"akinsho/toggleterm.nvim",
 	version = "*",
+	cmd = { "ToggleTerm", "ToggleTermToggleAll" },
+	keys = {
+		{ "<C-t>", desc = "Toggle terminal" },
+		{ "<M-t>", desc = "Toggle terminal" },
+		{ "<leader>t1", desc = "Terminal 1" },
+		{ "<leader>t2", desc = "Terminal 2" },
+		{ "<leader>t3", desc = "Terminal 3" },
+	},
 	config = function()
 		require("toggleterm").setup({
 			size = 15,

@@ -16,7 +16,7 @@ return {
       "MunifTanjim/nui.nvim",
       "nvim-tree/nvim-web-devicons", -- optional, but recommended
     },
-    lazy = false, -- neo-tree will lazily load itself
+    lazy = true, -- loaded by the <leader>e keymap above
     opts = {
 		 filesystem = {
 				bind_to_cwd = false,
