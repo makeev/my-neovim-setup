@@ -1,13 +1,40 @@
--- Strip trailing whitespace on save
+-- Strip trailing whitespace on save.
+-- Uses a line-by-line edit instead of `:%s/\s\+$//e` so that the cursor
+-- position and the last-search register are left untouched. Markdown is
+-- skipped entirely: two trailing spaces there are a hard line break.
+local strip_skip_ft = {
+  markdown = true,
+  gitcommit = true,
+  diff = true,
+}
+
 vim.api.nvim_create_autocmd("BufWritePre", {
-  pattern = "*",
-  command = [[%s/\s\+$//e]],
+  group = vim.api.nvim_create_augroup("strip_trailing_whitespace", { clear = true }),
+  callback = function(args)
+    if strip_skip_ft[vim.bo[args.buf].filetype] then
+      return
+    end
+
+    local lines = vim.api.nvim_buf_get_lines(args.buf, 0, -1, false)
+    local changed = false
+    for i, line in ipairs(lines) do
+      local stripped = line:gsub("%s+$", "")
+      if stripped ~= line then
+        lines[i] = stripped
+        changed = true
+      end
+    end
+
+    if changed then
+      vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, lines)
+    end
+  end,
 })
 
 -- Highlight on yank
 vim.api.nvim_create_autocmd("TextYankPost", {
   callback = function()
-    vim.highlight.on_yank({ timeout = 200 })
+    vim.hl.on_yank({ timeout = 200 })
   end,
 })
 
@@ -30,4 +57,3 @@ vim.api.nvim_create_autocmd("FileType", {
     vim.opt_local.breakindent = true
   end,
 })
-
