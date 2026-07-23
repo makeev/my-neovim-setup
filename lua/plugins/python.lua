@@ -1,12 +1,7 @@
 return {
-  -- Treesitter for Python syntax
-  {
-    "nvim-treesitter/nvim-treesitter",
-    opts = function(_, opts)
-      opts.ensure_installed = opts.ensure_installed or {}
-      vim.list_extend(opts.ensure_installed, { "python", "ninja", "rst" })
-    end,
-  },
+  -- NOTE: python/ninja/rst parsers live in the central list in treesitter.lua.
+  -- The `main` branch ignores `opts.ensure_installed`, so extending it here
+  -- had no effect.
 
   -- nvim-lint for mypy and other linters
   {
@@ -47,16 +42,6 @@ return {
       vim.api.nvim_create_user_command("Lint", function()
         lint.try_lint()
       end, { desc = "Trigger linting for current file" })
-    end,
-  },
-
-  -- Settings for the Python LSP servers (pyright and ruff_lsp)
-  {
-    "neovim/nvim-lspconfig",
-    opts = function()
-      -- These servers are already configured in lsp.lua via mason-lspconfig
-      -- Additional Python-specific settings can be added here
-      return {}
     end,
   },
 
