@@ -14,6 +14,7 @@ return {
 	opts = {
 		formatters_by_ft = {
 			json = { "prettier" },
+			jsonnet = { "jsonnetfmt" },
 			javascript = { "prettier" },
 			python = { "ruff" },
 			lua = { "stylua" },

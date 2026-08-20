@@ -15,6 +15,7 @@ local ensure_installed = {
   -- NOTE: no "jsonc" -- the `main` branch dropped it, jsonc files use the
   -- json parser instead.
   "json",
+  "jsonnet",
   "lua",
   "luadoc",
   "luap",

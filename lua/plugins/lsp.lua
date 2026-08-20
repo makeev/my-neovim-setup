@@ -1,7 +1,7 @@
 -- Servers to install via Mason and enable. Formatters/linters (stylua, prettier,
 -- mypy) are NOT valid entries here -- mason-lspconfig only resolves LSP server
 -- names. Those are handled by conform.nvim / nvim-lint instead.
-local servers = { "basedpyright", "ruff", "lua_ls", "ts_ls", "gopls" }
+local servers = { "basedpyright", "ruff", "lua_ls", "ts_ls", "gopls", "jsonnet_ls" }
 
 return {
   -- Mason for managing LSP servers.
