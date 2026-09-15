@@ -42,6 +42,10 @@ vim.opt.autoread = true
 -- Shorter CursorHold delay (drives LSP document highlight); default is 4000ms
 vim.opt.updatetime = 250
 
+-- Process Esc immediately; do not wait for more terminal-sequence bytes.
+vim.opt.ttimeout = true
+vim.opt.ttimeoutlen = 0
+
 -- Default border for every floating window (Nvim 0.11+), so individual
 -- plugins don't each need their own `border = "rounded"`
 vim.opt.winborder = "rounded"
