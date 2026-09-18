@@ -1,7 +1,7 @@
 -- Strip trailing whitespace on save.
--- Uses a line-by-line edit instead of `:%s/\s\+$//e` so that the cursor
--- position and the last-search register are left untouched. Markdown is
--- skipped entirely: two trailing spaces there are a hard line break.
+-- Delete only each line's whitespace suffix, preserving marks and extmarks
+-- in the remaining text, the cursor position and the last-search register.
+-- Markdown is skipped entirely: two trailing spaces there are a hard line break.
 local strip_skip_ft = {
   markdown = true,
   gitcommit = true,
@@ -16,17 +16,11 @@ vim.api.nvim_create_autocmd("BufWritePre", {
     end
 
     local lines = vim.api.nvim_buf_get_lines(args.buf, 0, -1, false)
-    local changed = false
     for i, line in ipairs(lines) do
-      local stripped = line:gsub("%s+$", "")
-      if stripped ~= line then
-        lines[i] = stripped
-        changed = true
+      local first = line:find("%s+$")
+      if first then
+        vim.api.nvim_buf_set_text(args.buf, i - 1, first - 1, i - 1, #line, {})
       end
-    end
-
-    if changed then
-      vim.api.nvim_buf_set_lines(args.buf, 0, -1, false, lines)
     end
   end,
 })

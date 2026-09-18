@@ -1,7 +1,8 @@
 -- Servers to install via Mason and enable. Formatters/linters (stylua, prettier,
 -- mypy) are NOT valid entries here -- mason-lspconfig only resolves LSP server
 -- names. Those are handled by conform.nvim / nvim-lint instead.
-local servers = { "basedpyright", "ruff", "lua_ls", "ts_ls", "gopls", "jsonnet_ls" }
+local servers =
+  { "basedpyright", "ruff", "lua_ls", "ts_ls", "gopls", "jsonnet_ls", "rust_analyzer" }
 
 return {
   -- Mason for managing LSP servers.
@@ -120,6 +121,25 @@ return {
             },
             staticcheck = true,
             gofumpt = true,
+          },
+        },
+      }
+
+      -- Rust. NOTE: ~/.cargo/bin/rust-analyzer is a rustup shim and the
+      -- component is NOT installed ("Unknown binary 'rust-analyzer'"), so the
+      -- bare name must not win the PATH lookup -- point at Mason's binary.
+      vim.lsp.config.rust_analyzer = {
+        cmd = { vim.fn.stdpath("data") .. "/mason/bin/rust-analyzer" },
+        filetypes = { "rust" },
+        root_markers = { "Cargo.toml", "rust-project.json", ".git" },
+        settings = {
+          ["rust-analyzer"] = {
+            -- Syntax errors (a missing comma, an unclosed brace) come from
+            -- rust-analyzer's own parser and show up as you type. Type errors
+            -- come from cargo check and land on :w.
+            check = { command = "clippy" },
+            cargo = { buildScripts = { enable = true } },
+            procMacro = { enable = true },
           },
         },
       }

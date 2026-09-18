@@ -8,11 +8,15 @@ return {
 		{ "<leader>t1", desc = "Terminal 1" },
 		{ "<leader>t2", desc = "Terminal 2" },
 		{ "<leader>t3", desc = "Terminal 3" },
+		{ "<leader>tl", desc = "Pick a terminal" },
+		{ "<M-,>", desc = "Focus previous terminal" },
+		{ "<M-.>", desc = "Focus next terminal" },
 	},
 	config = function()
 		require("toggleterm").setup({
 			size = 15,
-			open_mapping = { "<C-t>", "<M-t>" },
+			-- No open_mapping: <C-t>/<M-t> are bound below to a toggle that
+			-- hides and restores the whole panel, not just one terminal.
 			hide_numbers = true,
 			shade_terminals = true,
 			shading_factor = 2,
@@ -65,23 +69,121 @@ return {
 		-- Mapping for normal mode
 		vim.keymap.set("n", "<C-z>", "<Cmd>lua ToggleTerminalZoom()<CR>", { noremap = true, silent = true })
 
-		-- Function to open/focus a terminal (without closing it)
-		function _G.FocusOrOpenTerminal(term_id)
-			local terminals = require("toggleterm.terminal").get_all()
-			for _, term in ipairs(terminals) do
-				if term.id == term_id and term:is_open() then
-					-- Terminal is open — focus it
-					term:focus()
-					return
-				end
-			end
-			-- Terminal is not open — open it
-			vim.cmd(term_id .. "ToggleTerm")
+		-- The terminal panel holds every terminal you have opened, stacked at
+		-- the bottom. Showing it restores all of them, so hiding the panel and
+		-- then asking for another terminal brings the earlier ones back too.
+		local function all_terminals()
+			return require("toggleterm.terminal").get_all()
 		end
 
-		-- Mappings for terminals 1, 2, 3
-		vim.keymap.set("n", "<leader>t1", "<Cmd>lua FocusOrOpenTerminal(1)<CR>", { desc = "Terminal 1" })
-		vim.keymap.set("n", "<leader>t2", "<Cmd>lua FocusOrOpenTerminal(2)<CR>", { desc = "Terminal 2" })
-		vim.keymap.set("n", "<leader>t3", "<Cmd>lua FocusOrOpenTerminal(3)<CR>", { desc = "Terminal 3" })
+		local function open_terminals()
+			return vim.tbl_filter(function(term)
+				return term:is_open()
+			end, all_terminals())
+		end
+
+		---@param focus_id number? terminal to create if missing, and focus
+		function _G.ShowTerminalPanel(focus_id)
+			local terminal = require("toggleterm.terminal")
+			-- get_or_create_term() only builds the object; a terminal joins the
+			-- registry that get_all() reads when it is first opened. So hold on
+			-- to it here rather than looking it up again below.
+			local target = focus_id and terminal.get_or_create_term(focus_id) or nil
+			for _, term in ipairs(all_terminals()) do
+				if not term:is_open() then
+					term:open()
+				end
+			end
+			if target then
+				if not target:is_open() then
+					target:open()
+				end
+				target:focus()
+			end
+		end
+
+		-- Hide the panel if any of it is showing, otherwise bring it all back.
+		function _G.ToggleTerminalPanel()
+			local open = open_terminals()
+			if #open > 0 then
+				for _, term in ipairs(open) do
+					term:close()
+				end
+			else
+				_G.ShowTerminalPanel(#all_terminals() == 0 and 1 or nil)
+			end
+		end
+
+		-- <C-t>/<M-t> toggle the panel; a count still targets one terminal,
+		-- so 2<C-t> adds terminal 2 to the panel and focuses it.
+		for _, lhs in ipairs({ "<C-t>", "<M-t>" }) do
+			vim.keymap.set("n", lhs, function()
+				local count = vim.v.count
+				if count > 0 then
+					_G.ShowTerminalPanel(count)
+				else
+					_G.ToggleTerminalPanel()
+				end
+			end, { silent = true, desc = "Toggle terminal panel" })
+
+			vim.keymap.set("t", lhs, function()
+				_G.ToggleTerminalPanel()
+			end, { silent = true, desc = "Toggle terminal panel" })
+
+			vim.keymap.set("i", lhs, function()
+				vim.cmd("stopinsert")
+				_G.ToggleTerminalPanel()
+			end, { silent = true, desc = "Toggle terminal panel" })
+		end
+
+		-- Terminals 1, 2, 3: add to the panel (restoring the rest) and focus
+		for id = 1, 3 do
+			vim.keymap.set("n", "<leader>t" .. id, function()
+				_G.ShowTerminalPanel(id)
+			end, { silent = true, desc = "Terminal " .. id })
+		end
+
+		-- Move the focus between the terminals on screen; nothing is closed
+		function _G.FocusTerminal(step)
+			local open = open_terminals() -- get_all() sorts by id
+			if #open == 0 then
+				return _G.ShowTerminalPanel(1)
+			end
+			local current = require("toggleterm.terminal").get_focused_id()
+			local index = 1
+			for i, term in ipairs(open) do
+				if term.id == current then
+					index = i
+					break
+				end
+			end
+			open[(index - 1 + step) % #open + 1]:focus()
+		end
+
+		vim.keymap.set({ "n", "t" }, "<M-.>", function()
+			_G.FocusTerminal(1)
+		end, { silent = true, desc = "Focus next terminal" })
+
+		vim.keymap.set({ "n", "t" }, "<M-,>", function()
+			_G.FocusTerminal(-1)
+		end, { silent = true, desc = "Focus previous terminal" })
+
+		-- Picker over the existing terminals
+		vim.keymap.set("n", "<leader>tl", function()
+			local terms = all_terminals()
+			if #terms == 0 then
+				return _G.ShowTerminalPanel(1)
+			end
+			vim.ui.select(terms, {
+				prompt = "Terminal: ",
+				format_item = function(term)
+					return term.id .. ": " .. term:_display_name()
+				end,
+			}, function(term)
+				if term then
+					_G.ShowTerminalPanel(term.id)
+				end
+			end)
+		end, { silent = true, desc = "Pick a terminal" })
 	end,
 }

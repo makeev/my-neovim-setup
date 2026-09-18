@@ -27,6 +27,7 @@ local ensure_installed = {
   "query",
   "regex",
   "rst",
+  "rust",
   "toml",
   "tsx",
   "typescript",

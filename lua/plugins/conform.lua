@@ -17,6 +17,7 @@ return {
 			jsonnet = { "jsonnetfmt" },
 			javascript = { "prettier" },
 			python = { "ruff" },
+			rust = { "rustfmt" },
 			lua = { "stylua" },
 			typescript = { "prettier" },
 			html = { "prettier" },
