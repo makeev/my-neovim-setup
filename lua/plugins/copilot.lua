@@ -5,10 +5,21 @@ return {
     cmd = "Copilot",
     build = ":Copilot auth",
     event = "BufReadPost",
+    keys = {
+      {
+        "<leader>tc",
+        function()
+          require("copilot.suggestion").toggle_auto_trigger()
+          local on = vim.b.copilot_suggestion_auto_trigger
+          vim.notify("Copilot suggestions " .. (on and "on" or "off"))
+        end,
+        desc = "Toggle Copilot suggestions",
+      },
+    },
     opts = {
       suggestion = {
         enabled = true,
-        auto_trigger = true,
+        auto_trigger = false, -- off by default; turn on per buffer with <leader>tc
         debounce = 150, -- delay to reduce load while typing
         hide_during_completion = false, -- keep copilot visible when blink.cmp is showing
         keymap = {
