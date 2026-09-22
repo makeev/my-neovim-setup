@@ -1,8 +1,11 @@
 -- Servers to install via Mason and enable. Formatters/linters (stylua, prettier,
 -- mypy) are NOT valid entries here -- mason-lspconfig only resolves LSP server
 -- names. Those are handled by conform.nvim / nvim-lint instead.
-local servers =
-  { "basedpyright", "ruff", "lua_ls", "ts_ls", "gopls", "jsonnet_ls", "rust_analyzer" }
+local servers = { "basedpyright", "ruff", "lua_ls", "ts_ls", "gopls", "jsonnet_ls" }
+
+-- Installed by Mason but started elsewhere: rust-analyzer is owned by
+-- rustaceanvim (lua/plugins/rust.lua), enabling it here would spawn a 2nd client.
+local mason_only = { "rust_analyzer" }
 
 return {
   -- Mason for managing LSP servers.
@@ -27,7 +30,7 @@ return {
     event = { "BufReadPre", "BufNewFile" },
     dependencies = { "mason-org/mason.nvim" },
     opts = {
-      ensure_installed = servers,
+      ensure_installed = vim.list_extend(vim.deepcopy(servers), mason_only),
       -- v2 renamed `automatic_installation` -> `automatic_enable`. We call
       -- vim.lsp.enable() ourselves below, so don't let Mason enable them twice.
       automatic_enable = false,
@@ -125,25 +128,6 @@ return {
         },
       }
 
-      -- Rust. NOTE: ~/.cargo/bin/rust-analyzer is a rustup shim and the
-      -- component is NOT installed ("Unknown binary 'rust-analyzer'"), so the
-      -- bare name must not win the PATH lookup -- point at Mason's binary.
-      vim.lsp.config.rust_analyzer = {
-        cmd = { vim.fn.stdpath("data") .. "/mason/bin/rust-analyzer" },
-        filetypes = { "rust" },
-        root_markers = { "Cargo.toml", "rust-project.json", ".git" },
-        settings = {
-          ["rust-analyzer"] = {
-            -- Syntax errors (a missing comma, an unclosed brace) come from
-            -- rust-analyzer's own parser and show up as you type. Type errors
-            -- come from cargo check and land on :w.
-            check = { command = "clippy" },
-            cargo = { buildScripts = { enable = true } },
-            procMacro = { enable = true },
-          },
-        },
-      }
-
       vim.lsp.enable(servers)
 
       -- One LspAttach handler for every server, instead of a per-server
@@ -185,7 +169,11 @@ return {
 
           -- Keymaps
           vim.keymap.set("n", "gd", "<cmd>FzfLua lsp_definitions<cr>", opts)
-          vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+          -- Only for clients that can hover: otherwise a later attach (copilot)
+          -- re-runs this and clobbers rustaceanvim's K from its on_attach
+          if client:supports_method("textDocument/hover") then
+            vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
+          end
           vim.keymap.set("n", "gr", "<cmd>FzfLua lsp_references<cr>", opts)
           vim.keymap.set(
             "n",
