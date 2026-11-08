@@ -30,9 +30,15 @@ return {
       local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
       vim.api.nvim_create_autocmd({ "BufWritePost" }, {
         group = lint_augroup,
-        callback = function()
+        callback = function(args)
           -- Run the linter only for Python files
-          if vim.bo.filetype == "python" then
+          if vim.bo[args.buf].filetype ~= "python" then
+            return
+          end
+          -- mypy usually lives in the project's venv. Outside one it is not on
+          -- PATH, and nvim-lint would raise "Error running mypy: ENOENT" on
+          -- every save. :Lint still runs it unconditionally.
+          if vim.fn.executable(lint.linters.mypy.cmd) == 1 then
             lint.try_lint()
           end
         end,
@@ -53,11 +59,11 @@ return {
       "mfussenegger/nvim-dap",
     },
     config = function()
-      -- Try to find debugpy on the system
-      local debugpy_path = vim.fn.exepath("debugpy")
-      if debugpy_path ~= "" then
-        require("dap-python").setup(debugpy_path)
-      end
+      -- setup() takes a Python interpreter (or "uv"), not the debugpy script,
+      -- and debugpy is installed neither globally nor via Mason. With "uv" the
+      -- adapter runs as `uv run --with debugpy python -m debugpy.adapter`, so
+      -- debugpy is fetched on demand on top of the project's environment.
+      require("dap-python").setup(vim.fn.executable("uv") == 1 and "uv" or "python3")
     end,
   },
 }
