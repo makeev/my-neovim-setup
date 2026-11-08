@@ -50,23 +50,19 @@ return {
 			-- Navigation
 			map("n", "]c", function()
 				if vim.wo.diff then
-					return "]c"
+					vim.cmd.normal({ "]c", bang = true })
+				else
+					gs.nav_hunk("next")
 				end
-				vim.schedule(function()
-					gs.next_hunk()
-				end)
-				return "<Ignore>"
-			end, { expr = true, desc = "Next git hunk" })
+			end, { desc = "Next git hunk" })
 
 			map("n", "[c", function()
 				if vim.wo.diff then
-					return "[c"
+					vim.cmd.normal({ "[c", bang = true })
+				else
+					gs.nav_hunk("prev")
 				end
-				vim.schedule(function()
-					gs.prev_hunk()
-				end)
-				return "<Ignore>"
-			end, { expr = true, desc = "Previous git hunk" })
+			end, { desc = "Previous git hunk" })
 
 			-- Actions
 			map("n", "<leader>hs", gs.stage_hunk, { desc = "Stage hunk" })
@@ -78,7 +74,8 @@ return {
 				gs.reset_hunk({ vim.fn.line("."), vim.fn.line("v") })
 			end, { desc = "Reset hunk" })
 			map("n", "<leader>hS", gs.stage_buffer, { desc = "Stage buffer" })
-			map("n", "<leader>hu", gs.undo_stage_hunk, { desc = "Undo stage hunk" })
+			-- No separate "undo stage" (undo_stage_hunk is deprecated): <leader>hs
+			-- on a staged hunk unstages it.
 			map("n", "<leader>hR", gs.reset_buffer, { desc = "Reset buffer" })
 			map("n", "<leader>hp", gs.preview_hunk, { desc = "Preview hunk" })
 			map("n", "<leader>hb", function()
@@ -91,7 +88,11 @@ return {
 			map("n", "<leader>hD", function()
 				gs.diffthis("~")
 			end, { desc = "Diff this ~" })
-			map("n", "<leader>td", gs.toggle_deleted, { desc = "Toggle deleted" })
+			-- Replaces the deprecated toggle_deleted: deleted lines inline in the
+			-- current window; run again to close
+			map("n", "<leader>td", function()
+				gs.diffthis(nil, { unified = true })
+			end, { desc = "Toggle deleted (inline diff)" })
 
 			-- Text object
 			map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { desc = "Select hunk" })
