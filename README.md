@@ -104,7 +104,7 @@ Leader is `<Space>`. Press `<leader>?` for buffer-local keymaps (which-key).
 | `gd` / `gr` / `gi` | Definition / references / implementations |
 | `K` | Hover docs |
 | `<leader>rn` | Rename symbol |
-| `<C-m>` | Code action |
+| `<leader>ca` | Code action (also built-in `gra`) |
 | `<leader>ci` | Auto-import (basedpyright) |
 | `<leader>ts` | Toggle workspace ↔ open-files diagnostics |
 | `<leader>cv` | Select Python virtualenv |

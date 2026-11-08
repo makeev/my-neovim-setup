@@ -174,7 +174,14 @@ return {
           if client:supports_method("textDocument/hover") then
             vim.keymap.set("n", "K", vim.lsp.buf.hover, opts)
           end
-          vim.keymap.set("n", "gr", "<cmd>FzfLua lsp_references<cr>", opts)
+          -- nowait: Nvim's global grr/gra/grn/gri/grt/grx make `gr` a prefix,
+          -- so without it every `gr` stalls for 'timeoutlen' before firing
+          vim.keymap.set(
+            "n",
+            "gr",
+            "<cmd>FzfLua lsp_references<cr>",
+            { buffer = bufnr, silent = true, nowait = true, desc = "LSP References" }
+          )
           vim.keymap.set(
             "n",
             "<leader>rn",
@@ -182,7 +189,15 @@ return {
             { buffer = bufnr, silent = true, desc = "LSP Rename" }
           )
           vim.keymap.set("n", "gi", "<cmd>FzfLua lsp_implementations<cr>", opts)
-          vim.keymap.set("n", "<C-m>", vim.lsp.buf.code_action, opts)
+          -- Not <C-m>: without extended keys (tmux default) it is the same key
+          -- as <CR>, so Enter in Normal mode opened code actions. The built-in
+          -- `gra` works too.
+          vim.keymap.set(
+            "n",
+            "<leader>ca",
+            vim.lsp.buf.code_action,
+            { buffer = bufnr, silent = true, desc = "Code Action" }
+          )
           -- Auto Import - filter code actions to import-only (basedpyright)
           vim.keymap.set("n", "<leader>ci", function()
             vim.lsp.buf.code_action({
