@@ -124,7 +124,7 @@ Leader is `<Space>`. Press `<leader>?` for buffer-local keymaps (which-key).
 | Key | Action |
 |-----|--------|
 | `<leader>G` | LazyGit |
-| `<leader>gl` / `<leader>gf` | LazyGit log / file history |
+| `<leader>hl` / `<leader>hf` | LazyGit log / file history |
 | `]c` / `[c` | Next / previous hunk |
 | `<leader>hs` / `<leader>hr` | Stage / reset hunk |
 | `<leader>hp` / `<leader>hb` | Preview hunk / blame line |

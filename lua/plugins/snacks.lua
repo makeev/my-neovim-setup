@@ -108,15 +108,18 @@ return {
 			end,
 			desc = "LazyGit",
 		},
+		-- Under <leader>h with the gitsigns hunk maps, not <leader>g: a <leader>g*
+		-- map would turn <leader>g (live grep) into a prefix that waits
+		-- 'timeoutlen' before firing.
 		{
-			"<leader>gf",
+			"<leader>hf",
 			function()
 				Snacks.lazygit.log_file()
 			end,
 			desc = "LazyGit File History",
 		},
 		{
-			"<leader>gl",
+			"<leader>hl",
 			function()
 				Snacks.lazygit.log()
 			end,
