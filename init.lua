@@ -80,8 +80,15 @@ vim.api.nvim_create_autocmd('ModeChanged', {
     end,
 })
 
--- Colors for invisible characters
-vim.cmd([[
-    highlight Whitespace guifg=#3b4261 gui=NONE
-    highlight NonText guifg=#3b4261 gui=NONE
-]])
+-- Colors for invisible characters. Re-applied on ColorScheme: switching the
+-- light/dark theme runs :colorscheme, which resets every highlight group.
+local function set_invisible_chars_hl()
+    vim.api.nvim_set_hl(0, 'Whitespace', { fg = '#3b4261' })
+    vim.api.nvim_set_hl(0, 'NonText', { fg = '#3b4261' })
+end
+
+vim.api.nvim_create_autocmd('ColorScheme', {
+    group = vim.api.nvim_create_augroup('invisible_chars_hl', { clear = true }),
+    callback = set_invisible_chars_hl,
+})
+set_invisible_chars_hl()
